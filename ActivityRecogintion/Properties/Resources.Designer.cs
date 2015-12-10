@@ -115,7 +115,7 @@ namespace ActivityRecogintion.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SpeedwayR-11-0B-88.local.
+        ///   Looks up a localized string similar to SpeedwayR-11-7E-5E.local.
         /// </summary>
         internal static string ReaderHost {
             get {

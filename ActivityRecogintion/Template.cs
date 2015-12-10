@@ -5,7 +5,7 @@ namespace ActivityRecogintion
 {
     public class Template
     {
-        public string Name;
+        public string Name { get; set; }
         public string FileDir;
         public int Width;
         public int Height;

@@ -34,7 +34,7 @@ namespace ActivityRecogintion
                 {
                     xmlWriter.WriteStartElement("Object");
                     xmlWriter.WriteAttributeString("Name", obj.ToString());
-                    xmlWriter.WriteAttributeString("ID", RFID.Objects[obj].ID);
+                    xmlWriter.WriteAttributeString("ID", ObjectDetector.Objects[obj].ID);
                     xmlWriter.WriteEndElement();
                 }
 

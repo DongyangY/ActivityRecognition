@@ -8,12 +8,11 @@ namespace ActivityRecogintion
     using System.Collections.Generic;
     using System.Collections;
 
-    class GestureDetector
+    class PostureDetector
     {
         private readonly string GESTURE_DB = @"Gestures\AR.gbd";
-        private readonly string[] GESTURES = { "Drink", "Abdominal", "HangLiquidBag", "EarCheck" };
 
-        private VisualGestureBuilderFrameSource vgbFrameSource;
+        public VisualGestureBuilderFrameSource vgbFrameSource;
         private VisualGestureBuilderFrameReader vgbFrameReader;
 
         private int index;
@@ -51,7 +50,7 @@ namespace ActivityRecogintion
             }
         }
 
-        public GestureDetector(KinectSensor kinectSensor, int i, System.Windows.Controls.Canvas c)
+        public PostureDetector(KinectSensor kinectSensor, int i, System.Windows.Controls.Canvas c)
         {
             index = i;
             canvas = c;

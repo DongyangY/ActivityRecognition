@@ -5,12 +5,15 @@ namespace ActivityRecogintion
 {
     public class Activity
     {
+        public bool IsDynamicArea;
+        public string TemplateName;
         public System.Windows.Rect Area;
         public BodyOrientation.Orientations BodyOrientations;
         public LinkedList<Object.Objects> Objects;
         public LinkedList<Requirement> Requirements;
         public string Name;
         public int MinPeopleCount;
+        public LinkedList<string> Postures;
 
         // For activity record
         public bool IsActive;
@@ -32,7 +35,7 @@ namespace ActivityRecogintion
             LastTime = System.DateTime.Now.ToString(@"HHmmss");
         }
 
-        public bool isRequirementsSatisfied(Person[] persons, System.Windows.Controls.Canvas canvas)
+        public bool IsRequirementsSatisfied(Person[] persons, System.Windows.Controls.Canvas canvas)
         {
             foreach (Requirement req in Requirements)
             {
@@ -48,7 +51,7 @@ namespace ActivityRecogintion
 
             foreach (Object.Objects obj in this.Objects)
             {
-                if (!RFID.Objects[obj].IsInUse) isSatisfied = false;
+                if (!ObjectDetector.Objects[obj].IsInUse) isSatisfied = false;
             }
 
             return isSatisfied;
@@ -82,7 +85,7 @@ namespace ActivityRecogintion
                             && activity.Area.Contains(Transformation.ConvertGroundPlaneToCanvas(person.Position, canvas))
                             && (activity.BodyOrientations & person.Orientation) != 0
                             && activity.IsObjectUseSatisfied()
-                            && activity.isRequirementsSatisfied(persons, canvas))
+                            && activity.IsRequirementsSatisfied(persons, canvas))
                         {
                             strBuilder.Append("\n" + activity.Name);
                         }
@@ -106,7 +109,7 @@ namespace ActivityRecogintion
                             && activity.Area.Contains(Transformation.ConvertGroundPlaneToCanvas(person.Position, canvas))
                             && (activity.BodyOrientations & person.Orientation) != 0
                             && activity.IsObjectUseSatisfied()
-                            && activity.isRequirementsSatisfied(persons, canvas))
+                            && activity.IsRequirementsSatisfied(persons, canvas))
                         {
                             activity.IsActive = true;
                             break;

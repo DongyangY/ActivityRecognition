@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace ActivityRecogintion
 {
-    public class HeightSegmentation
+    public class TemplateDetector
     {
         public static float heightLow;
         public static float heightHigh;
@@ -86,13 +86,15 @@ namespace ActivityRecogintion
         
         }
 
-        public static void loadTemplate()
+        public static void loadTemplate(System.Windows.Controls.ListBox listBox)
         {
             Console.WriteLine("load templates");
 
             templates = new LinkedList<Template>();
             templates.AddLast(new Template("Table", "Table.txt", 150, 70, 30, 20, Brushes.Red));
             templates.AddLast(new Template("Cart", "Cart.txt", 70, 50, 30, 30, Brushes.Green));
+
+            listBox.ItemsSource = templates;
 
             foreach (Template t in templates)
             {

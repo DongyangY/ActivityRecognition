@@ -21,7 +21,7 @@
             </StackPanel>
         </Popup>
 
-        <Popup Width="320" Height="300" Name="Popup_Settings" Placement="Center" IsOpen="False" PopupAnimation="Fade" AllowsTransparency="True" StaysOpen="False" Margin="733,176,733,177" Grid.RowSpan="2">
+        <Popup Width="320" Height="120" Name="Popup_Settings" Placement="Center" IsOpen="False" PopupAnimation="Fade" AllowsTransparency="True" StaysOpen="False" Margin="733,176,733,177" Grid.RowSpan="2">
             <StackPanel Background="White">
                 <Grid Margin="10, 10, 10, 10">
                     <Grid.RowDefinitions>
@@ -34,15 +34,17 @@
             </StackPanel>
         </Popup>
 
-        <Popup Width="320" Height="350" Name="Popup_AddActivity" Placement="Center" IsOpen="False" PopupAnimation="Fade" AllowsTransparency="True" StaysOpen="False" Margin="733,176,733,177" Grid.RowSpan="2">
+        <Popup Width="320" Height="430" Name="Popup_AddActivity" Placement="Center" IsOpen="False" PopupAnimation="Fade" AllowsTransparency="True" StaysOpen="False" Margin="733,176,733,177" Grid.RowSpan="2">
             <StackPanel Background="White">
                 <Grid Margin="10, 10, 10, 10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="100"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="55"></RowDefinition>
+                        <RowDefinition Height="55"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -51,13 +53,29 @@
                     </Grid.ColumnDefinitions>
                     <Label Content="Activity Name: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
                     <TextBox Name="TextBox_ActivityName" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="30" />
-                    <Label Content="Body Orientations: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <CheckBox Name="CheckBox_OrientationFront" Content="Front" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                    <CheckBox Name="CheckBox_OrientationLeft" Content="Left" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50, 0, 0, 0" />
-                    <CheckBox Name="CheckBox_OrientationRight" Content="Right" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="100, 0, 0, 0" />
-                    <CheckBox Name="CheckBox_OrientationBack" Content="Back" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150, 0, 0, 0" />
-                    <Label Content="Minimum People: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <ComboBox Name="ComboxBox_MinPeople" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="30">
+                    <Label Content="Dynamic Area: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    <ListBox Name="ListBox_Area" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="50" SelectionMode="Single">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Label Content="Body Orientations: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    <CheckBox Name="CheckBox_OrientationFront" Content="Front" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <CheckBox Name="CheckBox_OrientationLeft" Content="Left" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50, 0, 0, 0" />
+                    <CheckBox Name="CheckBox_OrientationRight" Content="Right" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="100, 0, 0, 0" />
+                    <CheckBox Name="CheckBox_OrientationBack" Content="Back" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150, 0, 0, 0" />
+                    <Label Content="Postures: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    <ListBox Name="ListBox_Posture" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="50" SelectionMode="Multiple">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Label Content="Minimum People: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    <ComboBox Name="ComboxBox_MinPeople" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="30">
                         <ComboBoxItem>1</ComboBoxItem>
                         <ComboBoxItem>2</ComboBoxItem>
                         <ComboBoxItem>3</ComboBoxItem>
@@ -65,23 +83,23 @@
                         <ComboBoxItem>5</ComboBoxItem>
                         <ComboBoxItem>6</ComboBoxItem>
                     </ComboBox>
-                    <Label Content="Object Use: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <ListBox Name="ListBox_Object" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="100" SelectionMode="Multiple">
+                    <Label Content="Object Use: " Grid.Row="5" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    <ListBox Name="ListBox_Object" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="50" SelectionMode="Multiple">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Value.Name}" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Label Content="Requirement: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                    <ListBox Name="ListBox_Requirement" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="50" SelectionMode="Multiple">
+                    <Label Content="Requirement: " Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    <ListBox Name="ListBox_Requirement" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="200" Height="50" SelectionMode="Multiple">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Button Content="Add" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="50" Height="20" Click="Button_AddActivity" />
+                    <Button Content="Add" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Width="50" Height="20" Click="Button_AddActivity" />
                 </Grid>
             </StackPanel>
         </Popup>

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace ActivityRecogintion
 {
-    public class RFID
+    public class ObjectDetector
     {
         // Object info
         public static Dictionary<Object.Objects, Object> Objects;
@@ -20,7 +20,7 @@ namespace ActivityRecogintion
 
         //private int cnt = 0;
 
-        public RFID(System.Windows.Controls.ListBox listBox, System.Windows.Controls.ListView listView)
+        public ObjectDetector(System.Windows.Controls.ListBox listBox, System.Windows.Controls.ListView listView)
         {
             Objects = new Dictionary<Object.Objects, Object>();
             Objects.Add(Object.Objects.Book, new Object(Object.Objects.Book.ToString(), "0000 0000 0000 0000 0000 001E"));

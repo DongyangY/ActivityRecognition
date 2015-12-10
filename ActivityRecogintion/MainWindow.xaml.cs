@@ -48,7 +48,7 @@ namespace ActivityRecogintion
         // RFID
         private bool isRFIDAvailable = false;
         private Thread rfidThread;
-        private RFID rfid;
+        private ObjectDetector rfid;
 
         // System
         System.Timers.Timer startConnect;
@@ -57,7 +57,8 @@ namespace ActivityRecogintion
         private bool isStopingRecording = false;
 
         // Gesture
-        private List<GestureDetector> gestureDetectorList;
+        private List<PostureDetector> gestureDetectorList;
+        public static LinkedList<Posture> postures;
 
         // Segementation
         private bool isSegmentInHeight;
@@ -93,7 +94,7 @@ namespace ActivityRecogintion
             Settings.Load(activities);
             Requirement.LoadRequirements(ListBox_Requirement);
             Plot.InitBackgroundCanvas(Canvas_Position_Background);
-            HeightSegmentation.loadTemplate();
+            TemplateDetector.loadTemplate(ListBox_Area);
 
             multiSourceFrameReader = kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Depth);
             multiSourceFrameReader.MultiSourceFrameArrived += MultiSourceFrameReader_MultiSourceFrameArrived;
@@ -109,23 +110,33 @@ namespace ActivityRecogintion
             resetEnvironment = new System.Timers.Timer();
             resetEnvironment.AutoReset = true;
             resetEnvironment.Elapsed += ResetEnvironment_Elaped;     
-            resetEnvironment.Interval = 8000;
+            resetEnvironment.Interval = 10000;
             resetEnvironment.Enabled = true;
 
 
-            gestureDetectorList = new List<GestureDetector>();
-
+            gestureDetectorList = new List<PostureDetector>();
+            postures = new LinkedList<Posture>();
             
             for (int i = 0; i < kinectSensor.BodyFrameSource.BodyCount; ++i)
             {
-                GestureDetector detector = new GestureDetector(kinectSensor, i, Canvas_Position_Foreground);
+                PostureDetector detector = new PostureDetector(kinectSensor, i, Canvas_Position_Foreground);
                 gestureDetectorList.Add(detector);
+
+                if (i == 0)
+                {
+                    foreach (Gesture gesture in detector.vgbFrameSource.Gestures)
+                    {
+                        postures.AddLast(new Posture(gesture.Name));
+                    }
+
+                    ListBox_Posture.ItemsSource = postures;
+                }
             }
         }
 
         private void ResetEnvironment_Elaped(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (!isSegmentInHeight && !HeightSegmentation.isProcessing)
+            if (!isSegmentInHeight && !TemplateDetector.isProcessing)
             {
                 isSegmentInHeight = true;
             }
@@ -186,19 +197,19 @@ namespace ActivityRecogintion
 
                                     Console.WriteLine(depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width);
 
-                                    HeightSegmentation.heightLow = -2.4f;
-                                    HeightSegmentation.heightHigh = -1.9f;
-                                    HeightSegmentation.pointDiameter = 4;
-                                    HeightSegmentation.canvas_width = Canvas_Position_Background.Width;
-                                    HeightSegmentation.canvas_height = Canvas_Position_Background.Height;
-                                    HeightSegmentation.canvas_environment = Canvas_Position_Environment;
+                                    TemplateDetector.heightLow = -2.4f;
+                                    TemplateDetector.heightHigh = -1.9f;
+                                    TemplateDetector.pointDiameter = 4;
+                                    TemplateDetector.canvas_width = Canvas_Position_Background.Width;
+                                    TemplateDetector.canvas_height = Canvas_Position_Background.Height;
+                                    TemplateDetector.canvas_environment = Canvas_Position_Environment;
 
                                     Console.WriteLine("segmentation start");
                                     BackgroundWorker worker = new BackgroundWorker();
                                     worker.WorkerReportsProgress = true;
-                                    worker.DoWork += HeightSegmentation.DoInBackgrond;
-                                    worker.ProgressChanged += HeightSegmentation.OnProgress;
-                                    worker.RunWorkerCompleted += HeightSegmentation.OnPostExecute;
+                                    worker.DoWork += TemplateDetector.DoInBackgrond;
+                                    worker.ProgressChanged += TemplateDetector.OnProgress;
+                                    worker.RunWorkerCompleted += TemplateDetector.OnPostExecute;
                                     worker.RunWorkerAsync();
 
                                     isSegmentInHeight = false;
@@ -217,14 +228,14 @@ namespace ActivityRecogintion
                                                         new Rect(0.0, 0.0, kinectSensor.DepthFrameSource.FrameDescription.Width, kinectSensor.DepthFrameSource.FrameDescription.Height));
                                 }
 
-                                if (HeightSegmentation.isDrawDone)
+                                if (TemplateDetector.isDrawDone)
                                 {
                                     using (DrawingContext drawingContext_heightview = drawingGroup_heightview.Open())
                                     {
-                                        drawingContext_heightview.DrawImage(Transformation.ToBitmap(HeightSegmentation.area_width, HeightSegmentation.area_height, HeightSegmentation.pixels), 
-                                                        new Rect(0.0, 0.0, HeightSegmentation.area_width, HeightSegmentation.area_height));
+                                        drawingContext_heightview.DrawImage(Transformation.ToBitmap(TemplateDetector.area_width, TemplateDetector.area_height, TemplateDetector.pixels), 
+                                                        new Rect(0.0, 0.0, TemplateDetector.area_width, TemplateDetector.area_height));
 
-                                        foreach (Template t in HeightSegmentation.templates)
+                                        foreach (Template t in TemplateDetector.templates)
                                         {
                                             drawingContext_heightview.DrawRectangle(null, new Pen(t.Brush, 2),
                                             new Rect(new Point(t.TopLeft.X, t.TopLeft.Y), new Size(t.Width, t.Height)));
@@ -232,7 +243,7 @@ namespace ActivityRecogintion
                                         
                                     }
 
-                                    HeightSegmentation.isDrawDone = false;
+                                    TemplateDetector.isDrawDone = false;
                                 }
                                
                                 // Load and display each body info 
@@ -312,7 +323,7 @@ namespace ActivityRecogintion
 
             if (isRFIDAvailable)
             {
-                RFID.IsRFIDOpen = false;
+                ObjectDetector.IsRFIDOpen = false;
                 System.Threading.Thread.Sleep(1000);
 
                 Console.WriteLine(rfid.Reader.IsConnected);
@@ -340,11 +351,11 @@ namespace ActivityRecogintion
                 {
                     RecordTxt.StartTime = DateTime.Now.ToString("M-d-yyyy_HH-mm-ss");
 
-                    if (rfid == null) rfid = new RFID(ListBox_Object, ListView_Object);
+                    if (rfid == null) rfid = new ObjectDetector(ListBox_Object, ListView_Object);
 
                     if (isRFIDAvailable)
                     {
-                        RFID.IsRFIDOpen = true;
+                        ObjectDetector.IsRFIDOpen = true;
 
                         if (rfidThread == null)
                         {
@@ -446,7 +457,7 @@ namespace ActivityRecogintion
             
             if (this.gestureDetectorList != null)
             {
-                foreach (GestureDetector detector in this.gestureDetectorList)
+                foreach (PostureDetector detector in this.gestureDetectorList)
                 {
                     detector.Dispose();
                 }
