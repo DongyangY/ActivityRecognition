@@ -178,6 +178,10 @@ namespace ActivityRecognition
             {
                 Point canvasPoint = Transformation.ConvertGroundPlaneToCanvas(new Point(t.TopLeft.X - area_width / 2, t.TopLeft.Y + t.Height), canvas_width, canvas_height);
                 Plot.DrawRectangle(t.Width, t.Height, canvasPoint.X, canvasPoint.Y, t.Brush, canvas_environment);
+                t.location.Width = t.Width;
+                t.location.Height = t.Height;
+                t.TopLeft.X = canvasPoint.X;
+                t.TopLeft.Y = canvasPoint.Y;
             }
             
             //MainWindow.isSegmented = true;

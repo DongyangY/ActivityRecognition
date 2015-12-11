@@ -526,9 +526,23 @@ namespace ActivityRecognition
             int minPeopleCount = ComboxBox_MinPeople.SelectedIndex + 1;
             LinkedList<Object.Objects> objects = new LinkedList<Object.Objects>();
             LinkedList<Requirement> requirements = new LinkedList<Requirement>();
+            LinkedList<Posture> pos = new LinkedList<Posture>();
             foreach (KeyValuePair<Object.Objects, Object> pair in ListBox_Object.SelectedItems) objects.AddLast(pair.Key);
             foreach (Requirement req in ListBox_Requirement.SelectedItems) requirements.AddLast(req);
-            activities.AddLast(new Activity(area, orientations, objects, requirements, name, minPeopleCount));
+            foreach (Posture p in ListBox_Posture.SelectedItems) pos.AddFirst(p);
+
+            if (ListBox_Area.SelectedIndex == -1)
+            {
+                activities.AddLast(new Activity(area, orientations, pos, objects, requirements, name, minPeopleCount));
+            }
+            else
+            {
+                foreach (Template t in ListBox_Area.SelectedItems)
+                {
+                    activities.AddLast(new Activity(t.Name, orientations, pos, objects, requirements, name, minPeopleCount));
+                }
+            }
+            
         }
 
         private void Button_PopupActivity(object sender, RoutedEventArgs e)

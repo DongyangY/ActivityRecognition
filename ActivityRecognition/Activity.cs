@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace ActivityRecognition
 {
@@ -13,7 +14,7 @@ namespace ActivityRecognition
         public LinkedList<Requirement> Requirements;
         public string Name;
         public int MinPeopleCount;
-        public LinkedList<string> Postures;
+        public LinkedList<Posture> Postures;
 
         // For activity record
         public bool IsActive;
@@ -21,10 +22,27 @@ namespace ActivityRecognition
         public int RecordRow;
         public string LastTime;
 
-        public Activity(System.Windows.Rect area, BodyOrientation.Orientations bodyOrientations, LinkedList<Object.Objects> objects, LinkedList<Requirement> requirements, string name, int minPeopleCount)
+        public Activity(string templateName, BodyOrientation.Orientations bodyOrientations, LinkedList<Posture> postures, LinkedList<Object.Objects> objects, LinkedList<Requirement> requirements, string name, int minPeopleCount)
+        {
+            IsDynamicArea = true;
+            TemplateName = templateName;
+            BodyOrientations = bodyOrientations;
+            Postures = postures;
+            Objects = objects;
+            Requirements = requirements;
+            Name = name;
+            MinPeopleCount = minPeopleCount;
+            IsActive = false;
+            IsRecording = false;
+            RecordRow = 0;
+            LastTime = System.DateTime.Now.ToString(@"HHmmss");
+        }
+
+        public Activity(System.Windows.Rect area, BodyOrientation.Orientations bodyOrientations, LinkedList<Posture> postures, LinkedList<Object.Objects> objects, LinkedList<Requirement> requirements, string name, int minPeopleCount)
         {
             Area = area;
             BodyOrientations = bodyOrientations;
+            Postures = postures;
             Objects = objects;
             Requirements = requirements;
             Name = name;
@@ -72,6 +90,26 @@ namespace ActivityRecognition
             return (peopleCount >= this.MinPeopleCount);
         }
 
+        public bool IsAreaSatisfied(Person person, System.Windows.Controls.Canvas canvas)
+        {
+            Point p = Transformation.ConvertGroundPlaneToCanvas(person.Position, canvas);
+
+            if (this.IsDynamicArea)
+            {
+                Template template = null;
+                foreach (Template t in TemplateDetector.templates)
+                {
+                    if (t.Name.Equals(this.TemplateName)) template = t;
+                }     
+                
+                return (template != null) ? template.location.Contains(p) : false;        
+            }
+            else
+            {
+                return this.Area.Contains(p);
+            }
+        }
+
         public static void DecideActivityForPeople(LinkedList<Activity> activities, Person[] persons, System.Windows.Controls.Canvas canvas)
         {
             foreach (Person person in persons)
@@ -82,7 +120,7 @@ namespace ActivityRecognition
                     foreach (Activity activity in activities)
                     {
                         if (activity.IsMoreThanMinPeopleCount(persons, canvas)
-                            && activity.Area.Contains(Transformation.ConvertGroundPlaneToCanvas(person.Position, canvas))
+                            && activity.IsAreaSatisfied(person, canvas)
                             && (activity.BodyOrientations & person.Orientation) != 0
                             && activity.IsObjectUseSatisfied()
                             && activity.IsRequirementsSatisfied(persons, canvas))
@@ -106,7 +144,7 @@ namespace ActivityRecognition
                     if (person.IsTracked)
                     {
                         if (activity.IsMoreThanMinPeopleCount(persons, canvas)
-                            && activity.Area.Contains(Transformation.ConvertGroundPlaneToCanvas(person.Position, canvas))
+                            && activity.IsAreaSatisfied(person, canvas)
                             && (activity.BodyOrientations & person.Orientation) != 0
                             && activity.IsObjectUseSatisfied()
                             && activity.IsRequirementsSatisfied(persons, canvas))

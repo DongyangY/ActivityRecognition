@@ -14,6 +14,7 @@ namespace ActivityRecognition
         public float[,] Data;
         public Point TopLeft;
         public SolidColorBrush Brush;
+        public Rect location;
 
         public Template(string n, string f, int w, int h, int sw, int sh, SolidColorBrush b)
         {
@@ -26,6 +27,7 @@ namespace ActivityRecognition
             Brush = b;
             Data = new float[Height, Width];
             TopLeft = new Point();
+            location = new Rect();
         }
     }
 }
