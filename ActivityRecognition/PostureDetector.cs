@@ -83,6 +83,8 @@ namespace ActivityRecognition
                     {
                         Dictionary<string, float> gestures = new Dictionary<string, float>();
 
+                        MainWindow.persons[index].postures.Clear();
+
                         foreach (Gesture gesture in vgbFrameSource.Gestures)
                         {
                             if (gesture.GestureType == GestureType.Discrete)
@@ -95,12 +97,14 @@ namespace ActivityRecognition
                                     //Console.WriteLine("Gesture: {0}, Detected: {1}, Confidence: {2}", gesture.Name, result.Detected, result.Confidence);
                                     if (result.Detected) {
                                         gestures.Add(gesture.Name, result.Confidence);
+                                        MainWindow.persons[index].postures.AddLast(new Posture(gesture.Name));
                                     }
                                 }
                             }
                         }
 
-                        Plot.DrawGesturesOnCanvas(MainWindow.persons[index], gestures, canvas);
+                        //Plot.DrawGesturesOnCanvas(MainWindow.persons[index], gestures, canvas);
+
                     }
                 }
             }

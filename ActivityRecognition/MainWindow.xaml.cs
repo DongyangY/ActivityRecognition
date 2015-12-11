@@ -92,7 +92,7 @@ namespace ActivityRecognition
             segmentedDepthFramePixels = new ushort[kinectSensor.DepthFrameSource.FrameDescription.Width *
                                          kinectSensor.DepthFrameSource.FrameDescription.Height];
 
-            Settings.Load(activities);
+            //Settings.Load(activities);
             Requirement.LoadRequirements(ListBox_Requirement);
             Plot.InitBackgroundCanvas(Canvas_Position_Background);
             TemplateDetector.loadTemplate(ListBox_Area);
@@ -196,7 +196,7 @@ namespace ActivityRecognition
                                     cameraSpacePoints = new CameraSpacePoint[depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width];
                                     kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthFrameData, cameraSpacePoints);
 
-                                    Console.WriteLine(depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width);
+                                    //Console.WriteLine(depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width);
 
                                     TemplateDetector.heightLow = -2.4f;
                                     TemplateDetector.heightHigh = -1.9f;
@@ -205,7 +205,7 @@ namespace ActivityRecognition
                                     TemplateDetector.canvas_height = Canvas_Position_Background.Height;
                                     TemplateDetector.canvas_environment = Canvas_Position_Environment;
 
-                                    Console.WriteLine("segmentation start");
+                                    //Console.WriteLine("segmentation start");
                                     BackgroundWorker worker = new BackgroundWorker();
                                     worker.WorkerReportsProgress = true;
                                     worker.DoWork += TemplateDetector.DoInBackgrond;
@@ -259,8 +259,8 @@ namespace ActivityRecognition
                                     ulong trackingId = bodies[i].TrackingId;
                                     if (trackingId != gestureDetectorList[i].TrackingId)
                                     {
-                                        this.gestureDetectorList[i].TrackingId = trackingId;
-                                        this.gestureDetectorList[i].IsPaused = trackingId == 0;
+                                        gestureDetectorList[i].TrackingId = trackingId;
+                                        gestureDetectorList[i].IsPaused = trackingId == 0;
                                     }
                                     
 
@@ -320,19 +320,19 @@ namespace ActivityRecognition
 
         private void StopRecording_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Console.WriteLine("timer: stop recording");
+            //Console.WriteLine("timer: stop recording");
 
             if (isRFIDAvailable)
             {
                 ObjectDetector.IsRFIDOpen = false;
                 System.Threading.Thread.Sleep(1000);
 
-                Console.WriteLine(rfid.Reader.IsConnected);
+                //Console.WriteLine(rfid.Reader.IsConnected);
 
                 if (rfidThread != null)
                 {
                     rfidThread.Abort();
-                    Console.WriteLine("stoped in KINECT");
+                    //Console.WriteLine("stoped in KINECT");
                     rfidThread = null;
                 }
             }
@@ -557,7 +557,7 @@ namespace ActivityRecognition
 
         private void Button_SaveSettings(object sender, RoutedEventArgs e)
         {
-            Settings.Save(activities);
+            //Settings.Save(activities);
         }
 
         private void Button_ClearSettings(object sender, RoutedEventArgs e)

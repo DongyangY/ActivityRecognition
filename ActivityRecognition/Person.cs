@@ -1,4 +1,6 @@
-﻿namespace ActivityRecognition
+﻿using System.Collections.Generic;
+
+namespace ActivityRecognition
 {
     public class Person
     {
@@ -8,6 +10,7 @@
         public BodyOrientation.Orientations Orientation;
         public System.Windows.Media.Brush Color;
         public string Activities;
+        public LinkedList<Posture> postures;
 
         public Person()
         {
@@ -17,6 +20,7 @@
             Orientation = BodyOrientation.Orientations.Front;
             Color = System.Windows.Media.Brushes.Red;
             Activities = "";
+            postures = new LinkedList<Posture>();
         }
     }
 }

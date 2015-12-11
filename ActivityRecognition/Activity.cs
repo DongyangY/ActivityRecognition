@@ -110,6 +110,19 @@ namespace ActivityRecognition
             }
         }
 
+        public bool IsPostureSatisfied(Person person)
+        {
+            bool isSatisfied = false;
+            foreach (Posture posture_activity in this.Postures)
+            {
+                foreach(Posture posture_person in person.postures)
+                {
+                    if (posture_activity.Name.Equals(posture_person.Name)) isSatisfied = true;
+                }
+            }
+            return isSatisfied;
+        }
+
         public static void DecideActivityForPeople(LinkedList<Activity> activities, Person[] persons, System.Windows.Controls.Canvas canvas)
         {
             foreach (Person person in persons)
@@ -122,6 +135,7 @@ namespace ActivityRecognition
                         if (activity.IsMoreThanMinPeopleCount(persons, canvas)
                             && activity.IsAreaSatisfied(person, canvas)
                             && (activity.BodyOrientations & person.Orientation) != 0
+                            && activity.IsPostureSatisfied(person)
                             && activity.IsObjectUseSatisfied()
                             && activity.IsRequirementsSatisfied(persons, canvas))
                         {
@@ -146,6 +160,7 @@ namespace ActivityRecognition
                         if (activity.IsMoreThanMinPeopleCount(persons, canvas)
                             && activity.IsAreaSatisfied(person, canvas)
                             && (activity.BodyOrientations & person.Orientation) != 0
+                            && activity.IsPostureSatisfied(person)
                             && activity.IsObjectUseSatisfied()
                             && activity.IsRequirementsSatisfied(persons, canvas))
                         {

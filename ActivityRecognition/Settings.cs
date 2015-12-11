@@ -7,6 +7,7 @@ namespace ActivityRecognition
 {
     public class Settings
     {
+        /*
         public static void Save(LinkedList<Activity> activites)
         {
             XmlWriter xmlWriter = XmlWriter.Create(@"Settings/Settings.xml");
@@ -88,5 +89,6 @@ namespace ActivityRecognition
                 }
             }
         }
+        */
     }
 }

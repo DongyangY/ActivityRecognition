@@ -27,7 +27,7 @@ namespace ActivityRecognition
             Brush = b;
             Data = new float[Height, Width];
             TopLeft = new Point();
-            location = new Rect();
+            location = new Rect(new Point(0, 0), new Size(0, 0));
         }
     }
 }

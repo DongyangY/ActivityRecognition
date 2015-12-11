@@ -27,10 +27,11 @@ namespace ActivityRecognition
         public static bool isProcessing;
 
         public static LinkedList<Template> templates;
+        public static int extension_area = 100;
 
         public static void DoInBackgrond(object sender, DoWorkEventArgs e)
         {
-            Console.WriteLine("segmentation thread");
+            //Console.WriteLine("segmentation thread");
 
             isProcessing = true;
 
@@ -88,7 +89,7 @@ namespace ActivityRecognition
 
         public static void loadTemplate(System.Windows.Controls.ListBox listBox)
         {
-            Console.WriteLine("load templates");
+            //Console.WriteLine("load templates");
 
             templates = new LinkedList<Template>();
             templates.AddLast(new Template("Table", "Table.txt", 150, 70, 30, 20, Brushes.Red));
@@ -125,7 +126,7 @@ namespace ActivityRecognition
             {      
                 while (tl_x + t.Width <= area_width)
                 {
-                    Console.WriteLine("template: {0}, detect: {1}, {2}", t.Name, tl_x, tl_y);
+                    //Console.WriteLine("template: {0}, detect: {1}, {2}", t.Name, tl_x, tl_y);
                     float distance_local = compareTemplate(tl_x, tl_y, t);
 
                     if (distance_local < distance)
@@ -142,7 +143,7 @@ namespace ActivityRecognition
                 tl_y += t.Slide_height;
             }
 
-            Console.WriteLine("template: {0}, top left x: {1}, y: {2}",t.Name, t.TopLeft.X, t.TopLeft.Y);
+            //Console.WriteLine("template: {0}, top left x: {1}, y: {2}",t.Name, t.TopLeft.X, t.TopLeft.Y);
         }
 
         public static float compareTemplate(int tl_x, int tl_y, Template t)
@@ -170,7 +171,7 @@ namespace ActivityRecognition
 
         public static void OnPostExecute(object sender, RunWorkerCompletedEventArgs e)
         {
-            Console.WriteLine("segmentation done");
+            //Console.WriteLine("segmentation done");
 
             canvas_environment.Children.Clear();
 
@@ -178,10 +179,9 @@ namespace ActivityRecognition
             {
                 Point canvasPoint = Transformation.ConvertGroundPlaneToCanvas(new Point(t.TopLeft.X - area_width / 2, t.TopLeft.Y + t.Height), canvas_width, canvas_height);
                 Plot.DrawRectangle(t.Width, t.Height, canvasPoint.X, canvasPoint.Y, t.Brush, canvas_environment);
-                t.location.Width = t.Width;
-                t.location.Height = t.Height;
-                t.TopLeft.X = canvasPoint.X;
-                t.TopLeft.Y = canvasPoint.Y;
+
+                t.location = new Rect(new Point(canvasPoint.X - extension_area / 2, canvasPoint.Y - extension_area / 2), 
+                            new Size(t.Width + extension_area, t.Height + extension_area));
             }
             
             //MainWindow.isSegmented = true;
