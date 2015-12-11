@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class Object : INotifyPropertyChanged
     {

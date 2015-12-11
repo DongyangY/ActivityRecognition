@@ -4,7 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public static class Transformation
     {

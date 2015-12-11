@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Kinect;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class Plot
     {

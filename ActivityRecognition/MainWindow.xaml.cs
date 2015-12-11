@@ -1,5 +1,6 @@
 ﻿/**
  * @author Dongyang Yao
+ * @email dongyang1111yao@gmail.com
  */
 
 using Microsoft.Kinect;
@@ -13,7 +14,7 @@ using System.Windows.Input;
 using System.Threading;
 using System.ComponentModel;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public partial class MainWindow : Window
     {
@@ -217,7 +218,7 @@ namespace ActivityRecogintion
 
                                 // Load and display depth frame     
 
-                                if (true)
+                                if (!isSegmented)
                                 {
                                     drawingContext.DrawImage(Transformation.ToBitmap(depthFrame, depthFramePixels, true),
                                                         new Rect(0.0, 0.0, kinectSensor.DepthFrameSource.FrameDescription.Width, kinectSensor.DepthFrameSource.FrameDescription.Height));
@@ -308,8 +309,8 @@ namespace ActivityRecogintion
 
         public void Record()
         {
-            RecordTxt.RecordActivity(activities);
-            RecordTxt.RecordPosition(persons);
+            ActivityRecognition.Record.RecordActivity(activities);
+            ActivityRecognition.Record.RecordPosition(persons);
         }
 
         private void DrawSystemStatus()
@@ -349,7 +350,7 @@ namespace ActivityRecogintion
             {
                 if (!isRecordingOn)
                 {
-                    RecordTxt.StartTime = DateTime.Now.ToString("M-d-yyyy_HH-mm-ss");
+                    ActivityRecognition.Record.StartTime = DateTime.Now.ToString("M-d-yyyy_HH-mm-ss");
 
                     if (rfid == null) rfid = new ObjectDetector(ListBox_Object, ListView_Object);
 

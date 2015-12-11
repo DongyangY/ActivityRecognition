@@ -1,7 +1,7 @@
 ﻿using Microsoft.Kinect;
 using System;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class BodyOrientation
     {

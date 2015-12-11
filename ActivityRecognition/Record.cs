@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
-    class RecordTxt
+    class Record
     {
         public static string StartTime;
 

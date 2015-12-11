@@ -4,7 +4,7 @@ using System.Timers;
 using System.IO;
 using System.Collections.Generic;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class ObjectDetector
     {

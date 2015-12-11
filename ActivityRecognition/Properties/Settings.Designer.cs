@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ActivityRecogintion.Properties {
+namespace ActivityRecognition.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

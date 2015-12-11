@@ -3,7 +3,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class Settings
     {

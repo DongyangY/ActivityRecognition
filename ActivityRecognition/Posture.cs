@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class Posture
     {

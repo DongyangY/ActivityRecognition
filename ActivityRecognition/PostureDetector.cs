@@ -1,13 +1,10 @@
-﻿
-namespace ActivityRecogintion
-{
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.Kinect;
-    using Microsoft.Kinect.VisualGestureBuilder;
-    using System.Collections.Generic;
-    using System.Collections;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Kinect;
+using Microsoft.Kinect.VisualGestureBuilder;
 
+namespace ActivityRecognition
+{
     class PostureDetector
     {
         private readonly string GESTURE_DB = @"Gestures\AR.gbd";

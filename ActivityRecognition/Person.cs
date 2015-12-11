@@ -1,5 +1,4 @@
-﻿
-namespace ActivityRecogintion
+﻿namespace ActivityRecognition
 {
     public class Person
     {

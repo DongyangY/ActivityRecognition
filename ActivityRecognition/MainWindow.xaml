@@ -1,4 +1,4 @@
-﻿<Window x:Class="ActivityRecogintion.MainWindow"
+﻿<Window x:Class="ActivityRecognition.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Activity Recognition" Height="682" Width="1722" ResizeMode="NoResize" Closing="MainWindow_Closing">

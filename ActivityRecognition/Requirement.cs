@@ -1,12 +1,12 @@
 ﻿using System.Windows;
 using System.Collections.Generic;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     abstract public class Requirement
     {
         public static LinkedList<Requirement> Requirements;
-        public string Name = "Requirement";
+        abstract public string Name { get; set; }
         abstract public bool isSatisfied(Rect area, Person[] persons, System.Windows.Controls.Canvas canvas);
 
         public static void LoadRequirements(System.Windows.Controls.ListBox listBox){
@@ -18,15 +18,16 @@ namespace ActivityRecogintion
         public static Requirement ConstructChild(string Name)
         {
             if (Name == "Surround") return new Surround();
-            else return new Surround();
+            else return null;
         }
     }
 
     public class Surround : Requirement
     {
-        public string Name
+        public override string Name
         {
             get { return "Surround"; }
+            set { }
         }
 
         public override bool isSatisfied(Rect area, Person[] persons, System.Windows.Controls.Canvas canvas)

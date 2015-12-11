@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class Activity
     {

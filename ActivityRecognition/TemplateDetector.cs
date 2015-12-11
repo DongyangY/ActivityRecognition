@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.ComponentModel;
 using System.Collections.Generic;
 
-namespace ActivityRecogintion
+namespace ActivityRecognition
 {
     public class TemplateDetector
     {
@@ -180,7 +180,7 @@ namespace ActivityRecogintion
                 Plot.DrawRectangle(t.Width, t.Height, canvasPoint.X, canvasPoint.Y, t.Brush, canvas_environment);
             }
             
-            MainWindow.isSegmented = true;
+            //MainWindow.isSegmented = true;
             isProcessing = false;
         }
 
