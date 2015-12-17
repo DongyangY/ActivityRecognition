@@ -12,16 +12,6 @@ namespace ActivityRecognition
     public class Object : INotifyPropertyChanged
     {
         /// <summary>
-        /// Use status of the object
-        /// </summary>
-        private bool isInUse;
-
-        /// <summary>
-        /// RSSI value for the object
-        /// </summary>
-        private double rssi;
-
-        /// <summary>
         /// Defined object types
         /// </summary>
         public enum Objects { Book, Mouse, Cup, Marker, Bowl };
@@ -38,6 +28,11 @@ namespace ActivityRecognition
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IsInUse")); 
             }
         }
+
+        /// <summary>
+        /// Use status of the object
+        /// </summary>
+        private bool isInUse;
 
         /// <summary>
         /// Object name
@@ -71,6 +66,11 @@ namespace ActivityRecognition
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("RSSI")); 
             } 
         }
+
+        /// <summary>
+        /// RSSI value for the object
+        /// </summary>
+        private double rssi;
 
         /// <summary>
         /// Constructor for object

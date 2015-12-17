@@ -509,7 +509,7 @@ namespace ActivityRecognition
 
             if (isRFIDRequired)
             {
-                ObjectDetector.IsRFIDOpen = false;
+                ObjectDetector.IsOpenRFID = false;
                 System.Threading.Thread.Sleep(1000);
 
                 if (rfidThread != null)
@@ -542,7 +542,7 @@ namespace ActivityRecognition
 
                     if (isRFIDRequired)
                     {
-                        ObjectDetector.IsRFIDOpen = true;
+                        ObjectDetector.IsOpenRFID = true;
 
                         if (rfidThread == null)
                         {

@@ -1,4 +1,14 @@
-﻿using Impinj.OctaneSdk;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Determine object use status 
+// Using RSSI value of each tagged object from RFID reader
+// </summary>
+// <author> 
+// Dongyang Yao (dongyang.yao@rutgers.edu) 
+// </author>
+//------------------------------------------------------------------------------
+
+using Impinj.OctaneSdk;
 using System;
 using System.Timers;
 using System.IO;
@@ -8,52 +18,62 @@ namespace ActivityRecognition
 {
     public class ObjectDetector
     {
-        // Object info
+        /// <summary>
+        /// All defined objects' status
+        /// Updated when RFID reader callbacks
+        /// Read by controller for activity recognition
+        /// </summary>
         public static Dictionary<Object.Objects, Object> Objects;
-        public static bool IsRFIDOpen = false;
 
-        // Reader
+        /// <summary>
+        /// To stop RFID from another thread
+        /// </summary>
+        public static bool IsOpenRFID = false;
+
+        /// <summary>
+        /// RFID reader reference
+        /// </summary>
         public ImpinjReader Reader;
 
-        // Timer
-        private Timer updateTimer;
+        /// <summary>
+        /// Timer to update objects' status
+        /// </summary>
+        private Timer ObjectUpdate;
 
-        //private int cnt = 0;
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="listBox"></param>
+        /// <param name="listView"></param>
         public ObjectDetector(System.Windows.Controls.ListBox listBox, System.Windows.Controls.ListView listView)
         {
             Objects = new Dictionary<Object.Objects, Object>();
+
+            // Add tag IDs attched to objects
             Objects.Add(Object.Objects.Book, new Object(Object.Objects.Book.ToString(), "0000 0000 0000 0000 0000 001E"));
             Objects.Add(Object.Objects.Bowl, new Object(Object.Objects.Bowl.ToString(), "0000 0000 0000 0000 0000 0017"));
             Objects.Add(Object.Objects.Cup, new Object(Object.Objects.Cup.ToString(), "0000 0000 0000 0000 0000 0016"));
             Objects.Add(Object.Objects.Marker, new Object(Object.Objects.Marker.ToString(), "0000 0000 0000 0000 0000 0010"));
             Objects.Add(Object.Objects.Mouse, new Object(Object.Objects.Mouse.ToString(), "0000 0000 0000 0000 0000 0205"));
+
             listBox.ItemsSource = Objects;
             listView.ItemsSource = Objects;
 
             Reader = new ImpinjReader();
-            updateTimer = new Timer();
+            ObjectUpdate = new Timer();
         }
 
+        /// <summary>
+        /// Start method from main thread
+        /// </summary>
         public void Run()
         {
             try
             {
-                // Connect to the reader.
-                // Change the ReaderHostname constant in SolutionConstants.cs 
-                // to the IP address or hostname of your reader.
                 Reader.Connect(Properties.Resources.ReaderHost);
 
-                // Get the default settings
-                // We'll use these as a starting point
-                // and then modify the settings we're 
-                // interested in.
                 Impinj.OctaneSdk.Settings settings = Reader.QueryDefaultSettings();
 
-                // Tell the reader to include the antenna number, RSSI, Frequency and Phase
-                // in all tag reports. Other fields can be added
-                // to the reports in the same way by setting the 
-                // appropriate Report.IncludeXXXXXXX property.
                 settings.Report.IncludeAntennaPortNumber = true;
                 settings.Report.IncludePeakRssi = true;
                 settings.Report.IncludeDopplerFrequency = true;
@@ -61,21 +81,16 @@ namespace ActivityRecognition
                 settings.Report.IncludeLastSeenTime = true;
                 settings.Report.IncludeChannel = true;
 
-                // Set the reader mode, search mode and session
-                // settings.ReaderMode = ReaderMode.AutoSetDenseReader;
                 settings.ReaderMode = ReaderMode.MaxMiller;
                 settings.SearchMode = SearchMode.DualTarget;
                 settings.Session = 2;
 
-                // Enable all antennas
                 settings.Antennas.DisableAll();
                 settings.Antennas.GetAntenna(1).IsEnabled = true;
                 settings.Antennas.GetAntenna(2).IsEnabled = true;
                 settings.Antennas.GetAntenna(3).IsEnabled = true;
                 settings.Antennas.GetAntenna(4).IsEnabled = true;
 
-                // Set the Transmit Power and 
-                // Receive Sensitivity to the maximum.
                 settings.Antennas.GetAntenna(1).MaxTxPower = true;
                 settings.Antennas.GetAntenna(1).MaxRxSensitivity = true;
                 settings.Antennas.GetAntenna(2).MaxTxPower = true;
@@ -84,66 +99,61 @@ namespace ActivityRecognition
                 settings.Antennas.GetAntenna(3).MaxRxSensitivity = true;
                 settings.Antennas.GetAntenna(4).MaxTxPower = true;
                 settings.Antennas.GetAntenna(4).MaxRxSensitivity = true;
-                // You can also set them to specific values like this...
-                //settings.Antennas.GetAntenna(1).TxPowerInDbm = 20;
-                //settings.Antennas.GetAntenna(1).RxSensitivityInDbm = -70;
 
-                // Apply the newly modified settings.
                 Reader.ApplySettings(settings);
 
-                // Assign the TagsReported event handler.
-                // This specifies which method to call
-                // when tags reports are available.
                 Reader.TagsReported += OnTagsReported;
 
-                //Reader.ConnectionLost += Reader_ConnectionLost;
-                //Reader.ReaderStarted += Reader_ReaderStarted;
-                //Reader.ReaderStopped += Reader_ReaderStopped;
-
-                // Start reading.
                 Reader.Start();
 
-                // Start timer
-                updateTimer.Elapsed += new ElapsedEventHandler(UpdateObjectStatus);
-                updateTimer.Interval = 1 * 1000;
-                updateTimer.Enabled = true;
-
-
-                // Wait for the user to press enter.
-                Console.WriteLine("RFID started!");
-
-                //System.Threading.Thread.Sleep(5000);
-                //Stop();
+                ObjectUpdate.Elapsed += new ElapsedEventHandler(UpdateObjectStatus);
+                ObjectUpdate.Interval = 1 * 1000;
+                ObjectUpdate.Enabled = true;
             }
             catch (OctaneSdkException e)
             {
-                // Handle Octane SDK errors.
                 Console.WriteLine("Octane SDK exception: {0}", e.Message);
                 ErrorHandler.ProcessRFIDConnectionError();
             }
             catch (Exception e)
             {
-                // Handle other .NET errors.
                 Console.WriteLine("Exception : {0}", e.Message);
                 ErrorHandler.ProcessRFIDConnectionError();
             }
         }
 
+        /// <summary>
+        /// Handler for reader connection lost
+        /// </summary>
+        /// <param name="sender"></param>
         private void Reader_ConnectionLost(object sender)
         {
             Console.WriteLine("connection losted");
         }
 
+        /// <summary>
+        /// Handler for reader started
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Reader_ReaderStarted(object sender, ReaderStartedEvent e)
         {
             Console.WriteLine("reader started");
         }
 
+        /// <summary>
+        /// Hander for reader stopped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Reader_ReaderStopped(object sender, ReaderStoppedEvent e)
         {
             Console.WriteLine("reader stoped");
         }
 
+        /// <summary>
+        /// Clear the recorded RSSIs for all objects
+        /// </summary>
         private void ClearRSSI()
         {
             foreach (KeyValuePair<Object.Objects, Object> obj in Objects)
@@ -153,11 +163,13 @@ namespace ActivityRecognition
             }
         }
 
-        // Update object use status
+        /// <summary>
+        /// Callback for updating object status
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         private void UpdateObjectStatus(object source, ElapsedEventArgs e)
         {
-            //Console.WriteLine("interupt 2");
-
             Object mouse =  Objects[Object.Objects.Mouse];
             mouse.RSSI = mouse.RSSIAccumularor / mouse.ReadTimes;
             mouse.IsInUse = (mouse.ReadTimes == 0 || mouse.RSSI >= -55) ? true : false;
@@ -178,22 +190,17 @@ namespace ActivityRecognition
             book.RSSI = book.RSSIAccumularor / book.ReadTimes;
             book.IsInUse = (book.ReadTimes == 0 || book.RSSI >= -60) ? true : false;
 
-            //using (StreamWriter writer = new StreamWriter("book_4.txt", true))
-            //{
-            //    Console.WriteLine(cnt++);
-            //    //writer.WriteLine("{0} {1} {2} {3} {4}", mouse.IsInUse ? 1 : 0, cup.IsInUse ? 1 : 0, bowl.IsInUse ? 1 : 0, marker.IsInUse ? 1 : 0, book.IsInUse ? 1 : 0);
-            //    writer.WriteLine("{0}", book.IsInUse ? 1 : 0);
-            //}
-
             ClearRSSI();
         }
 
-        // Handler
+        /// <summary>
+        /// RFID reader callback when tag data received
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="report"></param>
         void OnTagsReported(ImpinjReader sender, TagReport report)
         {
-            //Console.WriteLine("interupt 1");
-
-            if (!IsRFIDOpen) Stop();
+            if (!IsOpenRFID) Stop();
 
             foreach (Tag tag in report)
             {
@@ -234,26 +241,24 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Stop RFID
+        /// </summary>
         public void Stop()
         {
-            updateTimer.Close();
+            ObjectUpdate.Close();
 
             if (Reader.IsConnected)
             {
                 try
                 {
                     Reader.Stop();
-                    Console.WriteLine("stoped in RFID");
-                    //System.Threading.Thread.Sleep(500);
                     Reader.Disconnect();
-                    Console.WriteLine("disconnect in RFID");
-                    //System.Threading.Thread.Sleep(500);
                 }
                 catch (System.Threading.ThreadInterruptedException e)
                 {
                     Console.WriteLine(e);
-                }
-                
+                }               
             }            
         }
     }
