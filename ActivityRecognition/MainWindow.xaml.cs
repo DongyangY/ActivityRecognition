@@ -47,15 +47,17 @@ namespace ActivityRecognition
         private bool isRecordingOn = false;
 
         // RFID
-        private bool isRFIDAvailable = false;
+        private bool isRFIDAvailable = true;
         private Thread rfidThread;
         private ObjectDetector rfid;
 
         // System
         System.Timers.Timer startConnect;
         System.Timers.Timer stopRecording;
+        System.Timers.Timer restartApplication;
         private static readonly double STOP_RECORDING_INTERVAL = 5000;
         private bool isStopingRecording = false;
+        private bool isApplicationDown = false;
 
         // Gesture
         private List<PostureDetector> gestureDetectorList;
@@ -114,6 +116,7 @@ namespace ActivityRecognition
             resetEnvironment.Interval = 10000;
             resetEnvironment.Enabled = true;
 
+            restartApplication = new System.Timers.Timer();
 
             gestureDetectorList = new List<PostureDetector>();
             postures = new LinkedList<Posture>();
@@ -133,6 +136,12 @@ namespace ActivityRecognition
                     ListBox_Posture.ItemsSource = postures;
                 }
             }
+        }
+
+        private void RestartApplication_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            isApplicationDown = true;
         }
 
         private void ResetEnvironment_Elaped(object sender, System.Timers.ElapsedEventArgs e)
@@ -165,13 +174,17 @@ namespace ActivityRecognition
             {
                 isKinectConnected = false;
                 //Console.WriteLine("disconnected");
-                ErrorHandler.ProcessDisconnectError();
+
+                if (!isApplicationDown)
+                    ErrorHandler.ProcessDisconnectError();
             }
         }
 
         // Handler for each arrived frame
         private void MultiSourceFrameReader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
+            if (isApplicationDown) Application.Current.Shutdown();
+
             MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
           
             if (multiSourceFrame != null)
@@ -248,9 +261,7 @@ namespace ActivityRecognition
                                 }
                                
                                 // Load and display each body info 
-                                bodyFrame.GetAndRefreshBodyData(bodies);
-
-                                
+                                bodyFrame.GetAndRefreshBodyData(bodies);                                                   
 
                                 for (int i = 0; i < kinectSensor.BodyFrameSource.BodyCount; ++i)
                                 {
@@ -295,11 +306,23 @@ namespace ActivityRecognition
                                 DrawSystemStatus();
 
                                 if (isRecordingOn)
-                                {
+                                {                                   
+                                    restartApplication.AutoReset = false;
+                                    restartApplication.Elapsed += RestartApplication_Elapsed;
+                                    restartApplication.Interval = 20000;
+                                    restartApplication.Enabled = true;
+
                                     CheckActivity();
                                     DrawActivityOnCanvas();
                                     Record(); 
-                                }                           
+                                }
+                                else
+                                {
+                                    if (restartApplication.Enabled)
+                                    {
+                                        restartApplication.Enabled = false;
+                                    }
+                                }                        
                             }
                         }                     
                     }
