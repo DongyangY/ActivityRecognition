@@ -7,8 +7,8 @@
     <ProjectGuid>{ED1653B9-1A4B-4B99-977C-9F5F1003B2D7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ActivityRecogintion</RootNamespace>
-    <AssemblyName>ActivityRecogintion</AssemblyName>
+    <RootNamespace>ActivityRecognition</RootNamespace>
+    <AssemblyName>ActivityRecognition</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

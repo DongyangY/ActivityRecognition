@@ -18,7 +18,7 @@ namespace ActivityRecognition
 {
     public partial class MainWindow : Window
     {
-        public static readonly double TiltAngle = 9; // Degree
+        public static readonly double TILT_ANGLE = Double.Parse(Properties.Resources.TiltAngle); // Degree
 
         // Kinect info
         private KinectSensor kinectSensor;
@@ -285,12 +285,12 @@ namespace ActivityRecognition
 
                                         // Update position
                                         CameraSpacePoint headPositionCamera = bodies[i].Joints[JointType.Head].Position; // Meter
-                                        CameraSpacePoint headPositionGournd = Transformation.RotateBackFromTilt(TiltAngle, true, headPositionCamera);
+                                        CameraSpacePoint headPositionGournd = Transformation.RotateBackFromTilt(TILT_ANGLE, true, headPositionCamera);
                                         Transformation.ConvertGroundSpaceToPlane(headPositionGournd, persons[i]);
 
                                         // Update body orientation
-                                        CameraSpacePoint leftShoulderPositionGround = Transformation.RotateBackFromTilt(TiltAngle, true, bodies[i].Joints[JointType.ShoulderLeft].Position);
-                                        CameraSpacePoint rightShoulderPositionGround = Transformation.RotateBackFromTilt(TiltAngle, true, bodies[i].Joints[JointType.ShoulderRight].Position);
+                                        CameraSpacePoint leftShoulderPositionGround = Transformation.RotateBackFromTilt(TILT_ANGLE, true, bodies[i].Joints[JointType.ShoulderLeft].Position);
+                                        CameraSpacePoint rightShoulderPositionGround = Transformation.RotateBackFromTilt(TILT_ANGLE, true, bodies[i].Joints[JointType.ShoulderRight].Position);
                                         BodyOrientation.DecideOrientation(leftShoulderPositionGround, rightShoulderPositionGround, persons[i], 
                                                                          Transformation.CountZeroInRec(depthFramePixels, kinectSensor.CoordinateMapper.MapCameraPointToDepthSpace(headPositionCamera), 
                                                                          16, kinectSensor.DepthFrameSource.FrameDescription.Width), Canvas_Position_Foreground);

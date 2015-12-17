@@ -39,7 +39,7 @@ namespace ActivityRecognition.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ActivityRecogintion.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ActivityRecognition.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -66,6 +66,42 @@ namespace ActivityRecognition.Properties {
         internal static string ConnectNotification {
             get {
                 return ResourceManager.GetString("ConnectNotification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D:\ActivityRecognition\Record\Activity\.
+        /// </summary>
+        internal static string DirectoryActivity {
+            get {
+                return ResourceManager.GetString("DirectoryActivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D:\ActivityRecognition\Record\Joint\.
+        /// </summary>
+        internal static string DirectoryJoint {
+            get {
+                return ResourceManager.GetString("DirectoryJoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D:\ActivityRecognition\Record\Position\.
+        /// </summary>
+        internal static string DirectoryPosition {
+            get {
+                return ResourceManager.GetString("DirectoryPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D:\ActivityRecognition\Record\RFID\.
+        /// </summary>
+        internal static string DirectoryRFID {
+            get {
+                return ResourceManager.GetString("DirectoryRFID", resourceCulture);
             }
         }
         
@@ -120,6 +156,15 @@ namespace ActivityRecognition.Properties {
         internal static string ReaderHost {
             get {
                 return ResourceManager.GetString("ReaderHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 9.
+        /// </summary>
+        internal static string TiltAngle {
+            get {
+                return ResourceManager.GetString("TiltAngle", resourceCulture);
             }
         }
     }

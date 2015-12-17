@@ -40,7 +40,7 @@ namespace ActivityRecognition
 
             for (int i = 0; i < MainWindow.cameraSpacePoints.Length; i++) 
             {
-                CameraSpacePoint point = Transformation.RotateBackFromTilt(MainWindow.TiltAngle, true, MainWindow.cameraSpacePoints[i]);
+                CameraSpacePoint point = Transformation.RotateBackFromTilt(MainWindow.TILT_ANGLE, true, MainWindow.cameraSpacePoints[i]);
 
                 if (point.Y >= heightLow && point.Y <= heightHigh)
                 {

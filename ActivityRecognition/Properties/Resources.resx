@@ -120,6 +120,18 @@
   <data name="ConnectNotification" xml:space="preserve">
     <value>The Kinect cable is connected.</value>
   </data>
+  <data name="DirectoryActivity" xml:space="preserve">
+    <value>D:\ActivityRecognition\Record\Activity\</value>
+  </data>
+  <data name="DirectoryJoint" xml:space="preserve">
+    <value>D:\ActivityRecognition\Record\Joint\</value>
+  </data>
+  <data name="DirectoryPosition" xml:space="preserve">
+    <value>D:\ActivityRecognition\Record\Position\</value>
+  </data>
+  <data name="DirectoryRFID" xml:space="preserve">
+    <value>D:\ActivityRecognition\Record\RFID\</value>
+  </data>
   <data name="DisconnectError" xml:space="preserve">
     <value>The Kinect cable is disconnected.</value>
   </data>
@@ -137,5 +149,8 @@
   </data>
   <data name="ReaderHost" xml:space="preserve">
     <value>SpeedwayR-11-7E-55.local</value>
+  </data>
+  <data name="TiltAngle" xml:space="preserve">
+    <value>9</value>
   </data>
 </root>
