@@ -254,14 +254,6 @@ namespace ActivityRecognition
                         {
                             strBuilder.Append("\n" + activity.Name);
                         }
-
-                        System.Console.WriteLine("{0}, {1}, {2}. {3}, {4}, {5}, {6}, {7}", person.ID, activity.Name,
-                            activity.IsMoreThanMinPeopleCount(persons, canvas),
-                            activity.IsAreaSatisfied(person, canvas),
-                            (activity.BodyOrientations & person.Orientation) != 0,
-                            activity.IsPostureSatisfied(person),
-                            activity.IsObjectUseSatisfied(),
-                            activity.IsRequirementsSatisfied(persons, canvas));
                     }
                     person.Activities = strBuilder.ToString();
                 }

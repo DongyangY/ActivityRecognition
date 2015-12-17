@@ -1,14 +1,36 @@
-﻿using Microsoft.Kinect;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Enum for body orientation
+// Methods for body orientation determination
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using Microsoft.Kinect;
 using System;
 
 namespace ActivityRecognition
 {
     public class BodyOrientation
     {
+        /// <summary>
+        /// General distance of two shoulders for person
+        /// </summary>
         public static readonly double ShoulderDistance = 0.4064; // Meter
-        public static readonly double OrientationBorder = 2;
+
+        /// <summary>
+        /// Boundary between (front, back) and (left, right) orientation
+        /// </summary>
+        public static readonly double OrientationBoundary = 2;
+
+        /// <summary>
+        /// The distance of two shoulders when people is facing left or right
+        /// </summary>
         public static double MaxShoulderZDifference = 0.274; // Defined
 
+        /// <summary>
+        /// Representation for each orientation
+        /// </summary>
         public enum Orientations
         {
             Front = 0x01,  // 0001
@@ -17,6 +39,11 @@ namespace ActivityRecognition
             Back = 0x08    // 1000
         };
 
+        /// <summary>
+        /// Convert int representation to enum representation
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static Orientations ConvertIntToOrientations(int number)
         {
             Orientations orientations = 0;
@@ -27,10 +54,19 @@ namespace ActivityRecognition
             return orientations;
         }
 
+        /// <summary>
+        /// Decide body orientation with body joints
+        /// </summary>
+        /// <param name="leftShoulder"></param>
+        /// <param name="rightShoulder"></param>
+        /// <param name="person"></param>
+        /// <param name="zeroCount"></param>
+        /// <param name="canvas"></param>
         public static void DecideOrientation(CameraSpacePoint leftShoulder, CameraSpacePoint rightShoulder, Person person, int zeroCount, System.Windows.Controls.Canvas canvas)
         {
+            // Uncomment to automatically find the max distance of two shoulders
             //if (Math.Abs(leftShoulder.Z - rightShoulder.Z) > MaxShoulderZDifference) MaxShoulderZDifference = Math.Abs(leftShoulder.Z - rightShoulder.Z);
-            if (Math.Abs(leftShoulder.Z - rightShoulder.Z) < (MaxShoulderZDifference / OrientationBorder))
+            if (Math.Abs(leftShoulder.Z - rightShoulder.Z) < (MaxShoulderZDifference / OrientationBoundary))
             {
                 double y = person.Position.Y;
                 double length = (canvas.Height - Plot.MinReliableDistance) / 4;
