@@ -113,6 +113,9 @@ namespace ActivityRecognition
         public bool IsPostureSatisfied(Person person)
         {
             bool isSatisfied = false;
+
+            if (this.Postures.Count == 0) return true;
+
             foreach (Posture posture_activity in this.Postures)
             {
                 foreach(Posture posture_person in person.postures)
