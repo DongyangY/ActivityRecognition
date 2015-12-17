@@ -1,4 +1,12 @@
-﻿using System.Windows;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Send emails when Kinect or RFID connection status changed
+// To detect connection errors
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using System.Windows;
 using System.Net.Mail;
 using System.Net;
 
@@ -6,8 +14,14 @@ namespace ActivityRecognition
 {
     public class ErrorHandler
     {
+        /// <summary>
+        /// Definition for error types
+        /// </summary>
         public enum ErrorType { DisconnectError, ConnectionNotification, ReaderConnectionError }
 
+        /// <summary>
+        /// Send if Kinect connected
+        /// </summary>
         public static void ProcessConnectNotification()
         {
             SendEmail(Properties.Resources.EmailFrom,
@@ -16,6 +30,9 @@ namespace ActivityRecognition
                 Properties.Resources.ConnectNotification);
         }
 
+        /// <summary>
+        /// Send if Kinect disconnected
+        /// </summary>
         public static void ProcessDisconnectError()
         {
             SendEmail(Properties.Resources.EmailFrom,
@@ -25,6 +42,9 @@ namespace ActivityRecognition
             MessageBox.Show("Please connect the Kinect");
         }
 
+        /// <summary>
+        /// Send if RFID is not connected correctly
+        /// </summary>
         public static void ProcessRFIDConnectionError()
         {
             SendEmail(Properties.Resources.EmailFrom,
@@ -34,6 +54,13 @@ namespace ActivityRecognition
             MessageBox.Show("Reader connection error");
         }
 
+        /// <summary>
+        /// Send email details
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
         public static void SendEmail(string from, string to, string subject, string body)
         {
             //MailAddress fromAddr = new MailAddress(from);
