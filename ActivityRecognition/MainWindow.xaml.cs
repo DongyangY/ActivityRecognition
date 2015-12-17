@@ -175,8 +175,7 @@ namespace ActivityRecognition
                 isKinectConnected = false;
                 //Console.WriteLine("disconnected");
 
-                if (!isApplicationDown)
-                    ErrorHandler.ProcessDisconnectError();
+                //ErrorHandler.ProcessDisconnectError();
             }
         }
 
@@ -307,22 +306,10 @@ namespace ActivityRecognition
 
                                 if (isRecordingOn)
                                 {                                   
-                                    restartApplication.AutoReset = false;
-                                    restartApplication.Elapsed += RestartApplication_Elapsed;
-                                    restartApplication.Interval = 20000;
-                                    restartApplication.Enabled = true;
-
                                     CheckActivity();
                                     DrawActivityOnCanvas();
                                     Record(); 
-                                }
-                                else
-                                {
-                                    if (restartApplication.Enabled)
-                                    {
-                                        restartApplication.Enabled = false;
-                                    }
-                                }                        
+                                }                      
                             }
                         }                     
                     }
@@ -344,6 +331,8 @@ namespace ActivityRecognition
         private void StopRecording_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             //Console.WriteLine("timer: stop recording");
+
+            restartApplication.Enabled = false;
 
             if (isRFIDAvailable)
             {
@@ -387,6 +376,11 @@ namespace ActivityRecognition
                             rfidThread.Start();
                         }
                     }
+
+                    restartApplication.AutoReset = false;
+                    restartApplication.Elapsed += RestartApplication_Elapsed;
+                    restartApplication.Interval = 20000;
+                    restartApplication.Enabled = true;
 
                     isRecordingOn = true;
                 }
