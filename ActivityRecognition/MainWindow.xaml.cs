@@ -47,7 +47,7 @@ namespace ActivityRecognition
         private bool isRecordingOn = false;
 
         // RFID
-        private bool isRFIDAvailable = true;
+        private bool isRFIDAvailable = false;
         private Thread rfidThread;
         private ObjectDetector rfid;
 
@@ -107,13 +107,13 @@ namespace ActivityRecognition
             startConnect = new System.Timers.Timer();
             startConnect.AutoReset = false;
             startConnect.Elapsed += StartConnect_Elapsed;
-            startConnect.Interval = 2000;
+            startConnect.Interval = 2000;  // 2s
             startConnect.Enabled = true;
 
             resetEnvironment = new System.Timers.Timer();
             resetEnvironment.AutoReset = true;
             resetEnvironment.Elapsed += ResetEnvironment_Elaped;     
-            resetEnvironment.Interval = 10000;
+            resetEnvironment.Interval = 10000;  // 10s
             resetEnvironment.Enabled = true;
 
             restartApplication = new System.Timers.Timer();
@@ -379,7 +379,7 @@ namespace ActivityRecognition
 
                     restartApplication.AutoReset = false;
                     restartApplication.Elapsed += RestartApplication_Elapsed;
-                    restartApplication.Interval = 20000;
+                    restartApplication.Interval = 1000 * 60 * 60;  // 1 hour
                     restartApplication.Enabled = true;
 
                     isRecordingOn = true;

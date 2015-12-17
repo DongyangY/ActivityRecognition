@@ -93,7 +93,7 @@ namespace ActivityRecognition
 
             templates = new LinkedList<Template>();
             templates.AddLast(new Template("Table", "Table.txt", 150, 70, 30, 20, Brushes.Red));
-            templates.AddLast(new Template("Cart", "Cart.txt", 70, 50, 30, 30, Brushes.Green));
+            //templates.AddLast(new Template("Cart", "Cart.txt", 70, 50, 30, 30, Brushes.Green));
 
             listBox.ItemsSource = templates;
 

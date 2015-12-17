@@ -81,7 +81,7 @@ namespace ActivityRecognition
 
             foreach (Person person in persons)
             {
-                if (person.IsTracked && this.Area.Contains(Transformation.ConvertGroundPlaneToCanvas(person.Position, canvas)))
+                if (person.IsTracked && IsAreaSatisfied(person, canvas))
                 {
                     peopleCount++;
                 }
