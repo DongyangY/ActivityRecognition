@@ -1,0 +1,51 @@
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\bin\Debug\ActivityRecogintion.exe.config
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\bin\Debug\ActivityRecogintion.exe
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\bin\Debug\ActivityRecogintion.pdb
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\bin\Debug\Microsoft.Kinect.dll
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\bin\Debug\Microsoft.Kinect.xml
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\MainWindow.baml
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\MainWindow.g.cs
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\App.g.cs
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion_MarkupCompile.cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.g.resources
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.Properties.Resources.resources
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.csproj.GenerateResource.Cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.exe
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.pdb
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.csprojResolveAssemblyReference.cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion\ActivityRecogintion\obj\Debug\ActivityRecogintion.csproj.ResolveComReference.cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\ActivityRecogintion.exe.config
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\ActivityRecogintion.exe
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\ActivityRecogintion.pdb
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\Microsoft.Kinect.dll
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\Microsoft.Kinect.xml
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.csproj.ResolveComReference.cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\MainWindow.baml
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\MainWindow.g.cs
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\App.g.cs
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion_MarkupCompile.cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.g.resources
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.Properties.Resources.resources
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.csproj.GenerateResource.Cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.exe
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.pdb
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\obj\Debug\ActivityRecogintion.csprojResolveAssemblyReference.cache
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\Microsoft.Kinect.VisualGestureBuilder.dll
+C:\Users\Dongyang\Desktop\LAB\ActivityRecogintion (Kinect&RFID)\ActivityRecogintion\bin\Debug\Microsoft.Kinect.VisualGestureBuilder.xml
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\ActivityRecogintion.exe.config
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion.exe
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion.pdb
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\ActivityRecogintion.exe
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\ActivityRecogintion.pdb
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\Microsoft.Kinect.dll
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\Microsoft.Kinect.VisualGestureBuilder.dll
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\Microsoft.Kinect.xml
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\bin\Debug\Microsoft.Kinect.VisualGestureBuilder.xml
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion.csprojResolveAssemblyReference.cache
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\MainWindow.baml
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\MainWindow.g.cs
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\App.g.cs
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion_MarkupCompile.cache
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion.g.resources
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion.Properties.Resources.resources
+C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecogintion\obj\Debug\ActivityRecogintion.csproj.GenerateResource.Cache

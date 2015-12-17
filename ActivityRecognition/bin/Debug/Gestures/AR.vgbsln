@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GestureBuilderFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SolutionFile>
+		<Header>
+			<Date>2015-11-30</Date>
+			<Time>17:23:07.1078734-05:00</Time>
+			<Version>1</Version>
+			<Type>Solution</Type>
+			<ID>8f33524d-14dd-4f81-bbc9-d47093dc78f8</ID>
+		</Header>
+		<Solution_Data>
+			<Files>
+				<Name />
+				<Content>
+					<Items>
+						<File>Abdominal.vgbproj</File>
+					</Items>
+					<Items>
+						<File>Abdominal.a.vgbproj</File>
+					</Items>
+					<Items>
+						<File>Drink.vgbproj</File>
+					</Items>
+					<Items>
+						<File>Drink.a.vgbproj</File>
+					</Items>
+					<Items>
+						<File>EarCheck.vgbproj</File>
+					</Items>
+					<Items>
+						<File>EarCheck.a.vgbproj</File>
+					</Items>
+					<Items>
+						<File>HangLiquidBag.vgbproj</File>
+					</Items>
+					<Items>
+						<File>HangLiquidBag.a.vgbproj</File>
+					</Items>
+				</Content>
+			</Files>
+		</Solution_Data>
+		<UI_State />
+		<Attributes />
+	</SolutionFile>
+</GestureBuilderFile>
