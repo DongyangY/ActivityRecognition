@@ -372,6 +372,7 @@ namespace ActivityRecognition
                                     TemplateDetector.canvas_height = Canvas_Position_Background.Height;
                                     TemplateDetector.canvas_environment = Canvas_Position_Environment;
 
+                                    // AsyncTask
                                     BackgroundWorker worker = new BackgroundWorker();
                                     worker.WorkerReportsProgress = true;
                                     worker.DoWork += TemplateDetector.DoInBackgrond;
