@@ -35,3 +35,6 @@ C:\Users\AR Team\Desktop\ActivityRecognition-beta1.0\ActivityRecognition\obj\Deb
 C:\Users\AR Team\Source\Repos\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\ActivityRecognition.exe.config
 C:\Users\AR Team\Source\Repos\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.exe
 C:\Users\AR Team\Source\Repos\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.pdb
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\ActivityRecognition.exe.config
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.exe
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.pdb

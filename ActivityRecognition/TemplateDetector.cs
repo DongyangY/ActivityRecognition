@@ -184,7 +184,7 @@ namespace ActivityRecognition
                             new Size(t.Width + extension_area, t.Height + extension_area));
             }
             
-            //MainWindow.isSegmented = true;
+            MainWindow.isHeightSegmented = true;
             isProcessing = false;
         }
 

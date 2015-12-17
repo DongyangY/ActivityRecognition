@@ -121,14 +121,14 @@ namespace ActivityRecognition
         /// Timer for checking Kinect connection when starting the application
         /// </summary>
         System.Timers.Timer kinectConnectionCheck;
-        private static readonly double KINECT_CONNECTION_CHECK_INTERVAL = 2000; // Millisecond
+        private static readonly double KINECT_CONNECTION_CHECK_INTERVAL = 1000 * 2; // Millisecond
 
         /// <summary>
         /// Latency for stop recording
         /// Designed for a leaved person coming back in a short period
         /// </summary>
         System.Timers.Timer recordStop;
-        private static readonly double RECORD_STOP_INTERVAL = 5000; // Millisecond
+        private static readonly double RECORD_STOP_INTERVAL = 1000 * 5; // Millisecond
 
         /// <summary>
         /// Timer for restarting the application
@@ -156,29 +156,64 @@ namespace ActivityRecognition
         /// </summary>
         public static LinkedList<Posture> postures;
 
-        // Segementation
-        private bool isSegmentInHeight;
-        public static bool isSegmented;
-        public static ushort[] segmentedDepthFramePixels;
-        public static CameraSpacePoint[] cameraSpacePoints;
-        public ImageSource HeightView { get { return _heightview; } }
-        private DrawingImage _heightview;
-        private DrawingGroup drawingGroup_heightview;
-        private System.Timers.Timer resetEnvironment;
+        /// <summary>
+        /// Status for starting to find templates
+        /// </summary>
+        private bool isFindingTemplate;
 
+        /// <summary>
+        /// Status for segmentation in depth frame by height segment
+        /// </summary>
+        public static bool isHeightSegmented;
+
+        /// <summary>
+        /// The height segmented depth frame pixels for display
+        /// </summary>
+        public static ushort[] segmentedDepthFramePixels;
+
+        /// <summary>
+        /// The 3D points in camera coordinates system mapped from depth view 
+        /// </summary>
+        public static CameraSpacePoint[] cameraSpacePoints;
+
+        /// <summary>
+        /// Binding source property for top view display
+        /// Intensity represents for height
+        /// </summary>
+        public ImageSource TopViewInHeight { get { return topViewInHeight; } }
+
+        /// <summary>
+        /// Private top view image
+        /// </summary>
+        private DrawingImage topViewInHeight;
+
+        /// <summary>
+        /// Drawing group for top view
+        /// </summary>
+        private DrawingGroup drawingGroup_topView;
+
+        /// <summary>
+        /// Timer for reset template position found
+        /// </summary>
+        private System.Timers.Timer templateSearch;
+        private static readonly double TEMPLATE_SEARCH_INTERVAL = 1000 * 10; // Millisecond
+
+        /// <summary>
+        /// Entry
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
 
-            // Init
             kinectSensor = KinectSensor.GetDefault();
+
             bodies = new Body[kinectSensor.BodyFrameSource.BodyCount];
             persons = new Person[kinectSensor.BodyFrameSource.BodyCount];
             activities = new LinkedList<Activity>();
             drawingGroup = new DrawingGroup();
             depthSource = new DrawingImage(drawingGroup);
-            drawingGroup_heightview = new DrawingGroup();
-            _heightview = new DrawingImage(drawingGroup_heightview);
+            drawingGroup_topView = new DrawingGroup();
+            topViewInHeight = new DrawingImage(drawingGroup_topView);
             DataContext = this;
 
             depthFramePixels = new ushort[kinectSensor.DepthFrameSource.FrameDescription.Width *
@@ -192,6 +227,7 @@ namespace ActivityRecognition
             Plot.InitBackgroundCanvas(Canvas_Position_Background);
             TemplateDetector.loadTemplate(ListBox_Area);
 
+            // Select source type needed, e.g., depth, color, body
             multiSourceFrameReader = kinectSensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Depth);
             multiSourceFrameReader.MultiSourceFrameArrived += MultiSourceFrameReader_MultiSourceFrameArrived;
             kinectSensor.IsAvailableChanged += KinectSensor_IsAvailableChanged;
@@ -203,11 +239,11 @@ namespace ActivityRecognition
             kinectConnectionCheck.Interval = KINECT_CONNECTION_CHECK_INTERVAL;
             kinectConnectionCheck.Enabled = true;
 
-            resetEnvironment = new System.Timers.Timer();
-            resetEnvironment.AutoReset = true;
-            resetEnvironment.Elapsed += ResetEnvironment_Elaped;     
-            resetEnvironment.Interval = 10000;  // 10s
-            resetEnvironment.Enabled = true;
+            templateSearch = new System.Timers.Timer();
+            templateSearch.AutoReset = true;
+            templateSearch.Elapsed += TemplateSearch_Elaped;     
+            templateSearch.Interval = TEMPLATE_SEARCH_INTERVAL;
+            templateSearch.Enabled = true;
 
             applicationRestart = new System.Timers.Timer();
 
@@ -219,8 +255,9 @@ namespace ActivityRecognition
                 PostureDetector detector = new PostureDetector(kinectSensor, i, Canvas_Position_Foreground);
                 gestureDetectorList.Add(detector);
 
+                // Init postures from trained PostureDetector.GESTURE_DB once
                 if (i == 0)
-                {
+                {                   
                     foreach (Gesture gesture in detector.vgbFrameSource.Gestures)
                     {
                         postures.AddLast(new Posture(gesture.Name));
@@ -231,20 +268,38 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Restart application
+        /// Timer callback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ApplicationRestart_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
             isDownApplication = true;
         }
 
-        private void ResetEnvironment_Elaped(object sender, System.Timers.ElapsedEventArgs e)
+        /// <summary>
+        /// Search templates
+        /// Timer callback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TemplateSearch_Elaped(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (!isSegmentInHeight && !TemplateDetector.isProcessing)
+            if (!isFindingTemplate && !TemplateDetector.isProcessing)
             {
-                isSegmentInHeight = true;
+                isFindingTemplate = true;
             }
         }
 
+        /// <summary>
+        /// Check Kinect connection when starting the application
+        /// Timer callback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void kinectConnectionCheck_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (!kinectSensor.IsAvailable)
@@ -254,25 +309,34 @@ namespace ActivityRecognition
 
             ((System.Timers.Timer)sender).Close();
         }
-
+        
+        /// <summary>
+        /// Handle the processing when Kinect connection status is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void KinectSensor_IsAvailableChanged(object sender, IsAvailableChangedEventArgs e)
         {
             if (!isKinectConnected && e.IsAvailable)
             {
                 isKinectConnected = true;
-                //Console.WriteLine("connected");
                 ErrorHandler.ProcessConnectNotification();
             }
             else if (isKinectConnected && !e.IsAvailable)
             {
                 isKinectConnected = false;
-                //Console.WriteLine("disconnected");
 
+                // Bug: conflict with restarting application
                 //ErrorHandler.ProcessDisconnectError();
             }
         }
 
-        // Handler for each arrived frame
+
+        /// <summary>
+        /// Handle the processing when Kinect frame arrived
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MultiSourceFrameReader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
             if (isDownApplication) Application.Current.Shutdown();
@@ -289,19 +353,17 @@ namespace ActivityRecognition
                         {
                             if (depthFrame != null && bodyFrame != null)
                             {
-                                // Refresh
+                                // Refresh the foreground of 2D top view for positioning
                                 Plot.RefreshForegroundCanvas(Canvas_Position_Foreground, activities);
 
-                                // Segment in height
-                                if (isSegmentInHeight)
+                                // Find templates
+                                if (isFindingTemplate)
                                 {
                                     ushort[] depthFrameData = new ushort[depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width];
                                     depthFrame.CopyFrameDataToArray(depthFrameData);
 
                                     cameraSpacePoints = new CameraSpacePoint[depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width];
                                     kinectSensor.CoordinateMapper.MapDepthFrameToCameraSpace(depthFrameData, cameraSpacePoints);
-
-                                    //Console.WriteLine(depthFrame.FrameDescription.Height * depthFrame.FrameDescription.Width);
 
                                     TemplateDetector.heightLow = -2.4f;
                                     TemplateDetector.heightHigh = -1.9f;
@@ -310,7 +372,6 @@ namespace ActivityRecognition
                                     TemplateDetector.canvas_height = Canvas_Position_Background.Height;
                                     TemplateDetector.canvas_environment = Canvas_Position_Environment;
 
-                                    //Console.WriteLine("segmentation start");
                                     BackgroundWorker worker = new BackgroundWorker();
                                     worker.WorkerReportsProgress = true;
                                     worker.DoWork += TemplateDetector.DoInBackgrond;
@@ -318,12 +379,13 @@ namespace ActivityRecognition
                                     worker.RunWorkerCompleted += TemplateDetector.OnPostExecute;
                                     worker.RunWorkerAsync();
 
-                                    isSegmentInHeight = false;
+                                    isFindingTemplate = false;
                                 }                            
 
-                                // Load and display depth frame     
-
-                                if (!isSegmented)
+                                // Display depth frame
+                                // Uncomment to enable the display for height segmentation result
+                                //if (!isHeightSegmented)
+                                if (true)
                                 {
                                     drawingContext.DrawImage(Transformation.ToBitmap(depthFrame, depthFramePixels, true),
                                                         new Rect(0.0, 0.0, kinectSensor.DepthFrameSource.FrameDescription.Width, kinectSensor.DepthFrameSource.FrameDescription.Height));
@@ -334,9 +396,10 @@ namespace ActivityRecognition
                                                         new Rect(0.0, 0.0, kinectSensor.DepthFrameSource.FrameDescription.Width, kinectSensor.DepthFrameSource.FrameDescription.Height));
                                 }
 
+                                // Display top view in height
                                 if (TemplateDetector.isDrawDone)
                                 {
-                                    using (DrawingContext drawingContext_heightview = drawingGroup_heightview.Open())
+                                    using (DrawingContext drawingContext_heightview = drawingGroup_topView.Open())
                                     {
                                         drawingContext_heightview.DrawImage(Transformation.ToBitmap(TemplateDetector.area_width, TemplateDetector.area_height, TemplateDetector.pixels), 
                                                         new Rect(0.0, 0.0, TemplateDetector.area_width, TemplateDetector.area_height));
@@ -352,9 +415,10 @@ namespace ActivityRecognition
                                     TemplateDetector.isDrawDone = false;
                                 }
                                
-                                // Load and display each body info 
+                                // Load raw body joints info from Kinect
                                 bodyFrame.GetAndRefreshBodyData(bodies);                                                   
 
+                                // Update personal infomation from raw joints
                                 for (int i = 0; i < kinectSensor.BodyFrameSource.BodyCount; ++i)
                                 {
                                     if (persons[i] == null) persons[i] = new Person();
@@ -366,7 +430,6 @@ namespace ActivityRecognition
                                         gestureDetectorList[i].IsPaused = trackingId == 0;
                                     }
                                     
-
                                     if (bodies[i].IsTracked)
                                     {
                                         // Update tracking status
@@ -374,14 +437,19 @@ namespace ActivityRecognition
 
                                         persons[i].ID = bodies[i].TrackingId;
 
+                                        // Assign color to person in the top view for positioning
                                         persons[i].Color = Plot.BodyColors[i];
 
-                                        // Update position
+                                        // Get person's 3D postion in camera's coordinate system
                                         CameraSpacePoint headPositionCamera = bodies[i].Joints[JointType.Head].Position; // Meter
+
+                                        // Convert to 3D position in horizontal coordinate system
                                         CameraSpacePoint headPositionGournd = Transformation.RotateBackFromTilt(TILT_ANGLE, true, headPositionCamera);
+
+                                        // Convert to 2D top view position on canvas
                                         Transformation.ConvertGroundSpaceToPlane(headPositionGournd, persons[i]);
 
-                                        // Update body orientation
+                                        // Determine body orientation using shoulder joints
                                         CameraSpacePoint leftShoulderPositionGround = Transformation.RotateBackFromTilt(TILT_ANGLE, true, bodies[i].Joints[JointType.ShoulderLeft].Position);
                                         CameraSpacePoint rightShoulderPositionGround = Transformation.RotateBackFromTilt(TILT_ANGLE, true, bodies[i].Joints[JointType.ShoulderRight].Position);
                                         BodyOrientation.DecideOrientation(leftShoulderPositionGround, rightShoulderPositionGround, persons[i], 
@@ -397,6 +465,7 @@ namespace ActivityRecognition
                                 DetermineSystemStatus();
                                 DrawSystemStatus();
 
+                                // Recognize and record activities when recording requirements are satisfied
                                 if (isRecording)
                                 {                                   
                                     CheckActivity();
@@ -410,21 +479,32 @@ namespace ActivityRecognition
             } 
         }
 
+        /// <summary>
+        /// Record each person's activitie in timeline
+        /// Record each person's position in timeline
+        /// </summary>
         public void Record()
         {
             ActivityRecognition.Record.RecordActivity(activities);
             ActivityRecognition.Record.RecordPosition(persons);
         }
 
+        /// <summary>
+        /// Draw recording system status
+        /// </summary>
         private void DrawSystemStatus()
         {
             Plot.DrawSystemStatus(Canvas_Position_Foreground, isRecording);
         }
 
+        /// <summary>
+        /// Start to stop recording after a latency
+        /// Callback for timer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RecordStop_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            //Console.WriteLine("timer: stop recording");
-
             applicationRestart.Enabled = false;
 
             if (isRFIDRequired)
@@ -432,12 +512,9 @@ namespace ActivityRecognition
                 ObjectDetector.IsRFIDOpen = false;
                 System.Threading.Thread.Sleep(1000);
 
-                //Console.WriteLine(rfid.Reader.IsConnected);
-
                 if (rfidThread != null)
                 {
                     rfidThread.Abort();
-                    //Console.WriteLine("stoped in KINECT");
                     rfidThread = null;
                 }
             }
@@ -448,9 +525,13 @@ namespace ActivityRecognition
             isStoppingRecord = false;
         }
 
+        /// <summary>
+        /// Determine recording system status with requirements
+        /// </summary>
         private void DetermineSystemStatus()
         {
-            // Condition for starting activity recoginition and record
+            // Take number of people in the view for the requirements
+            // Start recording
             if (Transformation.GetNumberOfPeople(persons) >= 1)
             {
                 if (!isRecording)
@@ -479,6 +560,7 @@ namespace ActivityRecognition
                 }
             }
 
+            // Stop recording
             if (Transformation.GetNumberOfPeople(persons) < 1)
             {
                 if (isRecording)
@@ -506,12 +588,19 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Decide each person's activity
+        /// Decide each activity's status - acted or not
+        /// </summary>
         private void CheckActivity()
         {
             Activity.DecideActivityForPeople(activities, persons, Canvas_Position_Foreground);
             Activity.DecideStatusOfActivity(activities, persons, Canvas_Position_Foreground);
         }
 
+        /// <summary>
+        /// Draw person on top view for positioning
+        /// </summary>
         private void DrawPeopleOnCanvas()
         {
             foreach (Person person in persons)
@@ -524,6 +613,9 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Draw text of each person's activity on top view for positioning
+        /// </summary>
         private void DrawActivityOnCanvas()
         {
             foreach (Person person in persons)
@@ -535,6 +627,10 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Label each person's head and some joints in depth frame view
+        /// </summary>
+        /// <param name="drawingContext"></param>
         private void DrawPeopleOnDepth(DrawingContext drawingContext)
         {
             for (int i = 0; i < persons.Length; i++) 
@@ -542,20 +638,30 @@ namespace ActivityRecognition
                 if (persons[i].IsTracked)
                 {
                     LinkedList<CameraSpacePoint> jointPoints = new LinkedList<CameraSpacePoint>();
+
+                    // Select the joints needed to display
                     jointPoints.AddLast(bodies[i].Joints[JointType.Head].Position);
                     jointPoints.AddLast(bodies[i].Joints[JointType.ShoulderLeft].Position);
                     jointPoints.AddLast(bodies[i].Joints[JointType.ShoulderRight].Position);
+
                     Plot.DrawJointsOnDepth(kinectSensor.CoordinateMapper, jointPoints, drawingContext, kinectSensor);
                     Plot.DrawTrackedHead(kinectSensor.CoordinateMapper, persons[i].Color, bodies[i].Joints[JointType.Neck].Position, bodies[i].Joints[JointType.Head].Position, drawingContext, kinectSensor);
                 }
             }
         }
 
-        // Dispose unreleased references when exiting
+        /// <summary>
+        /// Dispose unreleased references when closing the window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Kinect
             if (multiSourceFrameReader != null) multiSourceFrameReader.Dispose();
             if (kinectSensor != null) kinectSensor.Close();
+
+            // Object detector - RFID
             if (objectDetector != null)
             {
                 if (objectDetector.Reader != null)
@@ -565,7 +671,7 @@ namespace ActivityRecognition
                 if (rfidThread != null) rfidThread.Abort();
             }
 
-            
+            // Posture detector
             if (this.gestureDetectorList != null)
             {
                 foreach (PostureDetector detector in this.gestureDetectorList)
@@ -580,6 +686,12 @@ namespace ActivityRecognition
 
         }
 
+        /// <summary>
+        /// Get the start mouse position for area when defining activity
+        /// Mouse event callback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             isMouseDown = true;
@@ -590,6 +702,12 @@ namespace ActivityRecognition
             Rectangle_SelectArea.Height = 0;
         }
 
+        /// <summary>
+        /// Change the rectangle - selected area when mose is moving
+        /// Mouse event callback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMouseDown)
@@ -615,15 +733,25 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Get the end mouse position for area when defining activity
+        /// Mouse event callback
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             isMouseDown = false;
             mouseUpPosition = e.GetPosition(Canvas_Position_Foreground);
         }
 
+        /// <summary>
+        /// Add a defined activity
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_AddActivity(object sender, RoutedEventArgs e)
         {
-            // Add activity
             Rect area = new Rect(new Point(mouseDownPosition.X > mouseUpPosition.X ? mouseUpPosition.X : mouseDownPosition.X,
                                            mouseDownPosition.Y > mouseUpPosition.Y ? mouseUpPosition.Y : mouseDownPosition.Y),
                                  new Size(System.Math.Abs(mouseDownPosition.X - mouseUpPosition.X), System.Math.Abs(mouseDownPosition.Y - mouseUpPosition.Y)));
@@ -657,16 +785,32 @@ namespace ActivityRecognition
 
         }
 
+        /// <summary>
+        /// Pop up the window to add activity
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_PopupActivity(object sender, RoutedEventArgs e)
         {
             Popup_AddActivity.IsOpen = true;
         }
 
+        /// <summary>
+        /// Pop up the window to save or clear defined activities
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_PopupSetting(object sender, RoutedEventArgs e)
         {
             Popup_Settings.IsOpen = true;
         }
 
+        /// <summary>
+        /// Save defined activities
+        /// Load automatically when next start
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_SaveSettings(object sender, RoutedEventArgs e)
         {
             Settings.Save(activities);
@@ -674,6 +818,11 @@ namespace ActivityRecognition
             Popup_Settings.IsOpen = false;
         }
 
+        /// <summary>
+        /// Clear defined activities
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_ClearSettings(object sender, RoutedEventArgs e)
         {
             activities.Clear();
@@ -681,6 +830,12 @@ namespace ActivityRecognition
             Popup_Settings.IsOpen = false;
         }
 
+        /// <summary>
+        /// Popup the view to display the top view in height
+        /// For template detection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_ShowHeight(object sender, RoutedEventArgs e)
         {
             Popup_Area.IsOpen = true;
