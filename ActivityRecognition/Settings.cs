@@ -7,7 +7,6 @@ namespace ActivityRecognition
 {
     public class Settings
     {
-        /*
         public static void Save(LinkedList<Activity> activites)
         {
             XmlWriter xmlWriter = XmlWriter.Create(@"Settings/Settings.xml");
@@ -23,6 +22,8 @@ namespace ActivityRecognition
                 xmlWriter.WriteAttributeString("Name", activity.Name);
                 xmlWriter.WriteAttributeString("Body-Orientation", ((int)activity.BodyOrientations).ToString());
                 xmlWriter.WriteAttributeString("Minimal-People-Count", activity.MinPeopleCount.ToString());
+                xmlWriter.WriteAttributeString("Template-Name", activity.TemplateName);
+                xmlWriter.WriteAttributeString("Is-Dynamic-Area", activity.IsDynamicArea.ToString());
 
                 xmlWriter.WriteStartElement("Area");
                 xmlWriter.WriteAttributeString("X", activity.Area.X.ToString());
@@ -30,6 +31,13 @@ namespace ActivityRecognition
                 xmlWriter.WriteAttributeString("Width", activity.Area.Width.ToString());
                 xmlWriter.WriteAttributeString("Height", activity.Area.Height.ToString());
                 xmlWriter.WriteEndElement();
+
+                foreach (Posture pos in activity.Postures)
+                {
+                    xmlWriter.WriteStartElement("Posture");
+                    xmlWriter.WriteAttributeString("Name", pos.Name);
+                    xmlWriter.WriteEndElement();
+                }
 
                 foreach (Object.Objects obj in activity.Objects)
                 {
@@ -69,7 +77,14 @@ namespace ActivityRecognition
                 {
                     XmlNode nodeArea = node.SelectSingleNode("Area");
                     Rect rect = new Rect(new Point(double.Parse(nodeArea.Attributes["X"].Value), double.Parse(nodeArea.Attributes["Y"].Value)), new Size(double.Parse(nodeArea.Attributes["Width"].Value), double.Parse(nodeArea.Attributes["Height"].Value)));
-                    
+
+                    XmlNodeList nodeListPos = node.SelectNodes("Posture");
+                    LinkedList<Posture> postures = new LinkedList<Posture>();
+                    foreach (XmlNode pos in nodeListPos)
+                    {
+                        postures.AddLast(new Posture(pos.Attributes["Name"].Value));
+                    }
+
                     XmlNodeList nodeListObject = node.SelectNodes("Object");
                     LinkedList<Object.Objects> objects = new LinkedList<Object.Objects>();
                     foreach (XmlNode obj in nodeListObject)
@@ -83,12 +98,14 @@ namespace ActivityRecognition
                     {
                         requirements.AddLast(Requirement.ConstructChild(req.Attributes["Name"].Value));
                     }
+
+                    Activity activity = bool.Parse(node.Attributes["Is-Dynamic-Area"].Value) ?
+                        new Activity(node.Attributes["Template-Name"].Value, BodyOrientation.ConvertIntToOrientations(int.Parse(node.Attributes["Body-Orientation"].Value)), postures, objects, requirements, node.Attributes["Name"].Value, int.Parse(node.Attributes["Minimal-People-Count"].Value)) :                       
+                        new Activity(rect, BodyOrientation.ConvertIntToOrientations(int.Parse(node.Attributes["Body-Orientation"].Value)), postures, objects, requirements, node.Attributes["Name"].Value, int.Parse(node.Attributes["Minimal-People-Count"].Value));
                     
-                    Activity activity = new Activity(rect, BodyOrientation.ConvertIntToOrientations(int.Parse(node.Attributes["Body-Orientation"].Value)), objects, requirements, node.Attributes["Name"].Value, int.Parse(node.Attributes["Minimal-People-Count"].Value));
                     activities.AddLast(activity);
                 }
             }
         }
-        */
     }
 }

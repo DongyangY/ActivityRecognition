@@ -94,7 +94,7 @@ namespace ActivityRecognition
             segmentedDepthFramePixels = new ushort[kinectSensor.DepthFrameSource.FrameDescription.Width *
                                          kinectSensor.DepthFrameSource.FrameDescription.Height];
 
-            //Settings.Load(activities);
+            Settings.Load(activities);
             Requirement.LoadRequirements(ListBox_Requirement);
             Plot.InitBackgroundCanvas(Canvas_Position_Background);
             TemplateDetector.loadTemplate(ListBox_Area);
@@ -574,7 +574,7 @@ namespace ActivityRecognition
 
         private void Button_SaveSettings(object sender, RoutedEventArgs e)
         {
-            //Settings.Save(activities);
+            Settings.Save(activities);
         }
 
         private void Button_ClearSettings(object sender, RoutedEventArgs e)
