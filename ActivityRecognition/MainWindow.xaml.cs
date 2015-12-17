@@ -1,7 +1,9 @@
-﻿/**
- * @author Dongyang Yao
- * @email dongyang1111yao@gmail.com
- */
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Start and process Kinect frame callbacks, control RFID system
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
 
 using Microsoft.Kinect;
 using Microsoft.Kinect.VisualGestureBuilder;
@@ -16,51 +18,142 @@ using System.ComponentModel;
 
 namespace ActivityRecognition
 {
+    /// <summary>
+    /// Entry for the application
+    /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Tilt angle of Kinect
+        /// Since V2, we cannot obtain it programmly
+        /// </summary>
         public static readonly double TILT_ANGLE = Double.Parse(Properties.Resources.TiltAngle); // Degree
 
-        // Kinect info
+        /// <summary>
+        /// Kinect sensor reference
+        /// </summary>
         private KinectSensor kinectSensor;
+
+        /// <summary>
+        /// Reader for multi-source, e.g., depth, color, body
+        /// </summary>
         private MultiSourceFrameReader multiSourceFrameReader;
+
+        /// <summary>
+        /// Status of Kinect connection
+        /// Used for Kinect connection error handling
+        /// </summary>
         bool isKinectConnected = false;
 
-        // Person info
+        /// <summary>
+        /// Body joints raw info from Kinect body frame
+        /// </summary>
         private Body[] bodies;
+
+        /// <summary>
+        /// Person info for activity recognition
+        /// </summary>
         public static Person[] persons;
 
-        // Activity info
+        /// <summary>
+        /// Defined activities
+        /// </summary>
         private LinkedList<Activity> activities; 
 
-        // Depth source info
-        public ImageSource DepthSource { get { return _depthSource; } }
-        private DrawingImage _depthSource;
+        /// <summary>
+        /// Binding source property for depth display
+        /// </summary>
+        public ImageSource DepthSource { get { return depthSource; } }
+
+        /// <summary>
+        /// Private variable for depth frame image
+        /// </summary>
+        private DrawingImage depthSource;
+
+        /// <summary>
+        /// Drawing group for depth display
+        /// </summary>
         private DrawingGroup drawingGroup;
+
+        /// <summary>
+        /// Stored depth frame pixels
+        /// </summary>
         private ushort[] depthFramePixels;
 
-        // Activity area selection
+        /// <summary>
+        /// Mouse status for activity area selection
+        /// </summary>
         private bool isMouseDown = false;
+
+        /// <summary>
+        /// Mouse start position for activity area selection
+        /// </summary>
         private Point mouseDownPosition;
+
+        /// <summary>
+        /// Mouse end position for activity area selection
+        /// </summary>
         private Point mouseUpPosition;
 
-        // Record
-        private bool isRecordingOn = false;
+        /// <summary>
+        /// Status for activity, position, RFID recording
+        /// </summary>
+        private bool isRecording = false;
 
-        // RFID
-        private bool isRFIDAvailable = false;
+        /// <summary>
+        /// Turn off this boolean if no RFID system available
+        /// Only use Kinect to recognize activity
+        /// No object use detection
+        /// </summary>
+        private bool isRFIDRequired = false;
+
+        /// <summary>
+        /// A thread for RFID system
+        /// </summary>
         private Thread rfidThread;
-        private ObjectDetector rfid;
 
-        // System
-        System.Timers.Timer startConnect;
-        System.Timers.Timer stopRecording;
-        System.Timers.Timer restartApplication;
-        private static readonly double STOP_RECORDING_INTERVAL = 5000;
-        private bool isStopingRecording = false;
-        private bool isApplicationDown = false;
+        /// <summary>
+        /// Detector for object use
+        /// </summary>
+        private ObjectDetector objectDetector;
 
-        // Gesture
+        /// <summary>
+        /// Timer for checking Kinect connection when starting the application
+        /// </summary>
+        System.Timers.Timer kinectConnectionCheck;
+        private static readonly double KINECT_CONNECTION_CHECK_INTERVAL = 2000; // Millisecond
+
+        /// <summary>
+        /// Latency for stop recording
+        /// Designed for a leaved person coming back in a short period
+        /// </summary>
+        System.Timers.Timer recordStop;
+        private static readonly double RECORD_STOP_INTERVAL = 5000; // Millisecond
+
+        /// <summary>
+        /// Timer for restarting the application
+        /// </summary>
+        System.Timers.Timer applicationRestart;
+        private static readonly double APPLICATION_RESTART_INTERVAL = 1000 * 60 * 60; // Millisecond
+
+        /// <summary>
+        /// Check if it is in the record stop period
+        /// </summary>
+        private bool isStoppingRecord = false;
+
+        /// <summary>
+        /// Used for shuting down application in UI thread from a background thread
+        /// </summary>
+        private bool isDownApplication = false;
+
+        /// <summary>
+        /// Posture detectors for each person
+        /// </summary>
         private List<PostureDetector> gestureDetectorList;
+
+        /// <summary>
+        /// Defined postures using visual gesture builder
+        /// </summary>
         public static LinkedList<Posture> postures;
 
         // Segementation
@@ -83,7 +176,7 @@ namespace ActivityRecognition
             persons = new Person[kinectSensor.BodyFrameSource.BodyCount];
             activities = new LinkedList<Activity>();
             drawingGroup = new DrawingGroup();
-            _depthSource = new DrawingImage(drawingGroup);
+            depthSource = new DrawingImage(drawingGroup);
             drawingGroup_heightview = new DrawingGroup();
             _heightview = new DrawingImage(drawingGroup_heightview);
             DataContext = this;
@@ -104,11 +197,11 @@ namespace ActivityRecognition
             kinectSensor.IsAvailableChanged += KinectSensor_IsAvailableChanged;
             kinectSensor.Open();
 
-            startConnect = new System.Timers.Timer();
-            startConnect.AutoReset = false;
-            startConnect.Elapsed += StartConnect_Elapsed;
-            startConnect.Interval = 2000;  // 2s
-            startConnect.Enabled = true;
+            kinectConnectionCheck = new System.Timers.Timer();
+            kinectConnectionCheck.AutoReset = false;
+            kinectConnectionCheck.Elapsed += kinectConnectionCheck_Elapsed;
+            kinectConnectionCheck.Interval = KINECT_CONNECTION_CHECK_INTERVAL;
+            kinectConnectionCheck.Enabled = true;
 
             resetEnvironment = new System.Timers.Timer();
             resetEnvironment.AutoReset = true;
@@ -116,7 +209,7 @@ namespace ActivityRecognition
             resetEnvironment.Interval = 10000;  // 10s
             resetEnvironment.Enabled = true;
 
-            restartApplication = new System.Timers.Timer();
+            applicationRestart = new System.Timers.Timer();
 
             gestureDetectorList = new List<PostureDetector>();
             postures = new LinkedList<Posture>();
@@ -138,10 +231,10 @@ namespace ActivityRecognition
             }
         }
 
-        private void RestartApplication_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void ApplicationRestart_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
-            isApplicationDown = true;
+            isDownApplication = true;
         }
 
         private void ResetEnvironment_Elaped(object sender, System.Timers.ElapsedEventArgs e)
@@ -152,7 +245,7 @@ namespace ActivityRecognition
             }
         }
 
-        private void StartConnect_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void kinectConnectionCheck_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (!kinectSensor.IsAvailable)
             {
@@ -182,7 +275,7 @@ namespace ActivityRecognition
         // Handler for each arrived frame
         private void MultiSourceFrameReader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
-            if (isApplicationDown) Application.Current.Shutdown();
+            if (isDownApplication) Application.Current.Shutdown();
 
             MultiSourceFrame multiSourceFrame = e.FrameReference.AcquireFrame();
           
@@ -304,7 +397,7 @@ namespace ActivityRecognition
                                 DetermineSystemStatus();
                                 DrawSystemStatus();
 
-                                if (isRecordingOn)
+                                if (isRecording)
                                 {                                   
                                     CheckActivity();
                                     DrawActivityOnCanvas();
@@ -325,16 +418,16 @@ namespace ActivityRecognition
 
         private void DrawSystemStatus()
         {
-            Plot.DrawSystemStatus(Canvas_Position_Foreground, isRecordingOn);
+            Plot.DrawSystemStatus(Canvas_Position_Foreground, isRecording);
         }
 
-        private void StopRecording_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void RecordStop_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             //Console.WriteLine("timer: stop recording");
 
-            restartApplication.Enabled = false;
+            applicationRestart.Enabled = false;
 
-            if (isRFIDAvailable)
+            if (isRFIDRequired)
             {
                 ObjectDetector.IsRFIDOpen = false;
                 System.Threading.Thread.Sleep(1000);
@@ -349,10 +442,10 @@ namespace ActivityRecognition
                 }
             }
 
-            if (rfid != null) rfid = null;
+            if (objectDetector != null) objectDetector = null;
 
-            isRecordingOn = false;
-            isStopingRecording = false;
+            isRecording = false;
+            isStoppingRecord = false;
         }
 
         private void DetermineSystemStatus()
@@ -360,55 +453,55 @@ namespace ActivityRecognition
             // Condition for starting activity recoginition and record
             if (Transformation.GetNumberOfPeople(persons) >= 1)
             {
-                if (!isRecordingOn)
+                if (!isRecording)
                 {
                     ActivityRecognition.Record.StartTime = DateTime.Now.ToString("M-d-yyyy_HH-mm-ss");
 
-                    if (rfid == null) rfid = new ObjectDetector(ListBox_Object, ListView_Object);
+                    if (objectDetector == null) objectDetector = new ObjectDetector(ListBox_Object, ListView_Object);
 
-                    if (isRFIDAvailable)
+                    if (isRFIDRequired)
                     {
                         ObjectDetector.IsRFIDOpen = true;
 
                         if (rfidThread == null)
                         {
-                            rfidThread = new Thread(new ThreadStart(rfid.Run));
+                            rfidThread = new Thread(new ThreadStart(objectDetector.Run));
                             rfidThread.Start();
                         }
                     }
 
-                    restartApplication.AutoReset = false;
-                    restartApplication.Elapsed += RestartApplication_Elapsed;
-                    restartApplication.Interval = 1000 * 60 * 60;  // 1 hour
-                    restartApplication.Enabled = true;
+                    applicationRestart.AutoReset = false;
+                    applicationRestart.Elapsed += ApplicationRestart_Elapsed;
+                    applicationRestart.Interval = APPLICATION_RESTART_INTERVAL;
+                    applicationRestart.Enabled = true;
 
-                    isRecordingOn = true;
+                    isRecording = true;
                 }
             }
 
             if (Transformation.GetNumberOfPeople(persons) < 1)
             {
-                if (isRecordingOn)
+                if (isRecording)
                 {
 
-                    if (!isStopingRecording)
+                    if (!isStoppingRecord)
                     {
-                        isStopingRecording = true;
+                        isStoppingRecord = true;
 
-                        stopRecording = new System.Timers.Timer();
-                        stopRecording.AutoReset = false;
-                        stopRecording.Elapsed += StopRecording_Elapsed;
-                        stopRecording.Interval = STOP_RECORDING_INTERVAL;
-                        stopRecording.Enabled = true;
+                        recordStop = new System.Timers.Timer();
+                        recordStop.AutoReset = false;
+                        recordStop.Elapsed += RecordStop_Elapsed;
+                        recordStop.Interval = RECORD_STOP_INTERVAL;
+                        recordStop.Enabled = true;
                     }
                 }
             }
             else
             {
-                if (isStopingRecording)
+                if (isStoppingRecord)
                 {
-                    isStopingRecording = false;
-                    stopRecording.Enabled = false;
+                    isStoppingRecord = false;
+                    recordStop.Enabled = false;
                 }
             }
         }
@@ -463,11 +556,11 @@ namespace ActivityRecognition
         {
             if (multiSourceFrameReader != null) multiSourceFrameReader.Dispose();
             if (kinectSensor != null) kinectSensor.Close();
-            if (rfid != null)
+            if (objectDetector != null)
             {
-                if (rfid.Reader != null)
+                if (objectDetector.Reader != null)
                 {
-                    if (rfid.Reader.IsConnected) rfid.Stop();
+                    if (objectDetector.Reader.IsConnected) objectDetector.Stop();
                 }
                 if (rfidThread != null) rfidThread.Abort();
             }
@@ -559,7 +652,9 @@ namespace ActivityRecognition
                     activities.AddLast(new Activity(t.Name, orientations, pos, objects, requirements, name, minPeopleCount));
                 }
             }
-            
+
+            Popup_AddActivity.IsOpen = false;
+
         }
 
         private void Button_PopupActivity(object sender, RoutedEventArgs e)
@@ -575,11 +670,15 @@ namespace ActivityRecognition
         private void Button_SaveSettings(object sender, RoutedEventArgs e)
         {
             Settings.Save(activities);
+
+            Popup_Settings.IsOpen = false;
         }
 
         private void Button_ClearSettings(object sender, RoutedEventArgs e)
         {
             activities.Clear();
+
+            Popup_Settings.IsOpen = false;
         }
 
         private void Button_ShowHeight(object sender, RoutedEventArgs e)
