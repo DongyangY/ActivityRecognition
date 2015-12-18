@@ -1,4 +1,11 @@
-﻿using System;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Collection of transformation methods
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -8,31 +15,59 @@ namespace ActivityRecognition
 {
     public static class Transformation
     {
-        // Convert from Kinect Gound coordinate to canvas coordinate
+        /// <summary>
+        /// Convert from Kinect Gound coordinate to canvas coordinate
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="canvas"></param>
+        /// <returns></returns>
         public static Point ConvertGroundPlaneToCanvas(Point point, System.Windows.Controls.Canvas canvas)
         {
             return new Point(point.X + canvas.Width / 2, canvas.Height - point.Y);
         }
 
+        /// <summary>
+        /// Convert from Kinect Gound coordinate to canvas coordinate
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         public static Point ConvertGroundPlaneToCanvas(Point point, double width, double height)
         {
             return new Point(point.X + width / 2, height - point.Y);
         }
 
-        // Convert location in a 2D bitmap to index in a array
+        /// <summary>
+        /// Convert location in a 2D bitmap to index in a array
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public static int Convert2DToArray(int width, int height, float x, float y)
         {
             if (x < 0 || x >= width || y < 0 || y >= height) return -1;
             return (int)(x + 0.5f) + (int)(y + 0.5f) * width;
         }
 
-        // Convert point from ground space to ground plane - centimeter
+        /// <summary>
+        /// Convert point from ground space to ground plane - centimeter
+        /// </summary>
+        /// <param name="headPositionGround"></param>
+        /// <param name="person"></param>
         public static void ConvertGroundSpaceToPlane(CameraSpacePoint headPositionGround, Person person)
         {
             person.Position.X = - headPositionGround.X * 100;
             person.Position.Y = headPositionGround.Z * 100;
         }
 
+        /// <summary>
+        /// Convert point from ground space to ground plane - centimeter
+        /// </summary>
+        /// <param name="cameraPoint"></param>
+        /// <returns></returns>
         public static Point ConvertGroundSpaceToPlane(CameraSpacePoint cameraPoint)
         {
             Point point = new Point();
@@ -41,7 +76,13 @@ namespace ActivityRecognition
             return point;
         }
 
-        // Convert point from camera space to ground space
+        /// <summary>
+        /// Convert point from camera space to ground space
+        /// </summary>
+        /// <param name="tiltAngleDegree"></param>
+        /// <param name="tiltDown"></param>
+        /// <param name="headPositionCamera"></param>
+        /// <returns></returns>
         public static CameraSpacePoint RotateBackFromTilt(double tiltAngleDegree, bool tiltDown, CameraSpacePoint headPositionCamera)
         {
             tiltAngleDegree = tiltDown ? -tiltAngleDegree : tiltAngleDegree;
@@ -53,7 +94,13 @@ namespace ActivityRecognition
             return headPositionGround;
         }
 
-        // convert rotation quaternion to Euler angles in degrees
+        /// <summary>
+        /// Convert rotation quaternion to Euler angles in degrees
+        /// </summary>
+        /// <param name="rotQuaternion"></param>
+        /// <param name="pitch"></param>
+        /// <param name="yaw"></param>
+        /// <param name="roll"></param>
         public static void QuaternionToRotationMatrix(Vector4 rotQuaternion, out double pitch, out double yaw, out double roll)
         {
             double x = rotQuaternion.X;
@@ -66,7 +113,13 @@ namespace ActivityRecognition
             roll = Math.Atan2(2 * ((x * y) + (w * z)), (w * w) + (x * x) - (y * y) - (z * z)) / Math.PI * 180.0;
         }
 
-
+        /// <summary>
+        /// Convert pixels to image source
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="depthPixels"></param>
+        /// <returns></returns>
         public static ImageSource ToBitmap(int width, int height, byte[] depthPixels)
         {
             PixelFormat format = PixelFormats.Bgr32;
@@ -91,8 +144,14 @@ namespace ActivityRecognition
 
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
         }
-        
-        // Convert depth frame to image source
+
+        /// <summary>
+        /// Convert depth frame to image source
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="depthPixels"></param>
+        /// <param name="doCopy"></param>
+        /// <returns></returns>
         public static ImageSource ToBitmap(DepthFrame frame, ushort[] depthPixels, bool doCopy)
         {
             int width = frame.FrameDescription.Width;
@@ -125,6 +184,14 @@ namespace ActivityRecognition
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
         }
 
+        /// <summary>
+        /// Count number of undefined points in a rectangle
+        /// </summary>
+        /// <param name="depthPixels"></param>
+        /// <param name="center"></param>
+        /// <param name="sideLength"></param>
+        /// <param name="displayWidth"></param>
+        /// <returns></returns>
         public static int CountZeroInRec(ushort[] depthPixels, DepthSpacePoint center, int sideLength, int displayWidth)
         {
             int zeroCount = 0;
@@ -142,6 +209,11 @@ namespace ActivityRecognition
             return zeroCount;
         }
 
+        /// <summary>
+        /// Get number of tracked person
+        /// </summary>
+        /// <param name="persons"></param>
+        /// <returns></returns>
         public static int GetNumberOfPeople(Person[] persons)
         {
             int num = 0;
