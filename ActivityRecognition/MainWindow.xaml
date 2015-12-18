@@ -16,7 +16,7 @@
         <Popup Width="900" Height="450" Name="Popup_Area" Placement="Center" IsOpen="False" PopupAnimation="Fade" AllowsTransparency="True" StaysOpen="False" Margin="733,176,733,177" Grid.RowSpan="2">
             <StackPanel Background="White">
                 <Viewbox Width="900" Height="450">
-                    <Image Source="{Binding HeightView}" />
+                    <Image Source="{Binding TopViewInHeight}" />
                 </Viewbox>
             </StackPanel>
         </Popup>
