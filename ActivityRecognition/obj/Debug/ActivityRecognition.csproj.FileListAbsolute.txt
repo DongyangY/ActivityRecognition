@@ -38,3 +38,16 @@ C:\Users\AR Team\Source\Repos\ActivityRecognition-Kinect\ActivityRecognition\obj
 C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\ActivityRecognition.exe.config
 C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.exe
 C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.pdb
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\MainWindow.baml
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\MainWindow.g.cs
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\App.g.cs
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition_MarkupCompile.cache
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.g.resources
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.Properties.Resources.resources
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\obj\Debug\ActivityRecognition.csproj.GenerateResource.Cache
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\ActivityRecognition.exe
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\ActivityRecognition.pdb
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\Microsoft.Kinect.dll
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\Microsoft.Kinect.VisualGestureBuilder.dll
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\Microsoft.Kinect.xml
+C:\Users\AR Team\Desktop\ActivityRecognition-Kinect\ActivityRecognition\bin\Debug\Microsoft.Kinect.VisualGestureBuilder.xml

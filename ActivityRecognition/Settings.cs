@@ -1,4 +1,11 @@
-﻿using System;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Record the defined activities for reloading next time
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.Windows;
@@ -7,6 +14,10 @@ namespace ActivityRecognition
 {
     public class Settings
     {
+        /// <summary>
+        /// Save activities in XML
+        /// </summary>
+        /// <param name="activites"></param>
         public static void Save(LinkedList<Activity> activites)
         {
             XmlWriter xmlWriter = XmlWriter.Create(@"Settings/Settings.xml");
@@ -64,6 +75,10 @@ namespace ActivityRecognition
             xmlWriter.Close();
         }
 
+        /// <summary>
+        /// Load saved activities from XML
+        /// </summary>
+        /// <param name="activities"></param>
         public static void Load(LinkedList<Activity> activities)
         {
             XmlDocument doc = new XmlDocument();

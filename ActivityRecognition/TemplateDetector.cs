@@ -1,4 +1,11 @@
-﻿using Microsoft.Kinect;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Dynamically detect furnitures, e.g., desk, using templating method
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using Microsoft.Kinect;
 using System.Windows;
 using System.IO;
 using System;
@@ -10,29 +17,78 @@ namespace ActivityRecognition
 {
     public class TemplateDetector
     {
+        /// <summary>
+        /// Lowest height for segmentation
+        /// </summary>
         public static float heightLow;
-        public static float heightHigh;
-        public static double pointDiameter;
-        public static double canvas_width;
-        public static double canvas_height;
-        public static System.Windows.Controls.Canvas canvas_environment;
-        public static Point canvasPoint;
-        public static Brush brush;
 
+        /// <summary>
+        /// Highest height for segementation
+        /// </summary>
+        public static float heightHigh;
+
+        /// <summary>
+        /// Canvas width of top view 
+        /// </summary>
+        public static double canvas_width;
+
+        /// <summary>
+        /// Canvas height of top view
+        /// </summary>
+        public static double canvas_height;
+
+        /// <summary>
+        /// Canvas for environment
+        /// </summary>
+        public static System.Windows.Controls.Canvas canvas_environment;
+
+        /// <summary>
+        /// Detection area width
+        /// </summary>
         public static int area_width = 900;
+
+        /// <summary>
+        /// Detection area height
+        /// </summary>
         public static int area_height = 450;
+
+        /// <summary>
+        /// 2D matrix for area height data
+        /// </summary>
         public static float[,] area;
+
+        /// <summary>
+        /// 1D array for area height data 
+        /// </summary>
         public static byte[] pixels;
+
+        /// <summary>
+        /// Is drawing height view done
+        /// </summary>
         public static bool isDrawDone;
+
+        /// <summary>
+        /// Is currently calculating the template
+        /// </summary>
         public static bool isProcessing;
 
+        /// <summary>
+        /// List of templates for detection
+        /// </summary>
         public static LinkedList<Template> templates;
+
+        /// <summary>
+        /// The extended area from template for activity recognition
+        /// </summary>
         public static int extension_area = 100;
 
+        /// <summary>
+        /// Search templates in background thread
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void DoInBackgrond(object sender, DoWorkEventArgs e)
         {
-            //Console.WriteLine("segmentation thread");
-
             isProcessing = true;
 
             area = new float[area_height, area_width];
@@ -42,16 +98,16 @@ namespace ActivityRecognition
             {
                 CameraSpacePoint point = Transformation.RotateBackFromTilt(MainWindow.TILT_ANGLE, true, MainWindow.cameraSpacePoints[i]);
 
+                // Segment in Height
                 if (point.Y >= heightLow && point.Y <= heightHigh)
                 {
                     MainWindow.segmentedDepthFramePixels[i] = ushort.MaxValue;
                 }
 
+                // Get the detection area height data
                 if (!float.IsNegativeInfinity(point.X) && !float.IsNegativeInfinity(point.Y) && !float.IsNegativeInfinity(point.Z))
                 {
                     Point planePoint = Transformation.ConvertGroundSpaceToPlane(point);
-
-                    //canvasPoint = Transformation.ConvertGroundPlaneToCanvas(new Point(planePoint.X - pointDiameter / 2, planePoint.Y + pointDiameter / 2), canvas_width, canvas_height);
 
                     float height = point.Y * 100;
 
@@ -63,9 +119,6 @@ namespace ActivityRecognition
                     // Discard the ceil and underground
                     if (height < -50 && height > -255) 
                     {
-                        //brush = new SolidColorBrush(Color.FromArgb(0, 0, (byte)(height + 255), 0));
-                        //(sender as BackgroundWorker).ReportProgress(0);
-
                         int x = (int) (-point.X * 100) + area_width / 2;
                         int y = (int) (point.Z * 100);
 
@@ -78,6 +131,7 @@ namespace ActivityRecognition
                 }
             }
 
+            // Search template
             foreach (Template t in templates)
             {
                 detectTemplate(t);
@@ -87,11 +141,15 @@ namespace ActivityRecognition
         
         }
 
+        /// <summary>
+        /// Load templates from file
+        /// </summary>
+        /// <param name="listBox"></param>
         public static void loadTemplate(System.Windows.Controls.ListBox listBox)
         {
-            //Console.WriteLine("load templates");
-
             templates = new LinkedList<Template>();
+
+            // Add templates
             templates.AddLast(new Template("Table", "Table.txt", 150, 70, 30, 20, Brushes.Red));
             //templates.AddLast(new Template("Cart", "Cart.txt", 70, 50, 30, 30, Brushes.Green));
 
@@ -116,6 +174,10 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Find minimum error position for template
+        /// </summary>
+        /// <param name="t"></param>
         public static void detectTemplate(Template t)
         {
             int tl_x = 0;
@@ -126,7 +188,6 @@ namespace ActivityRecognition
             {      
                 while (tl_x + t.Width <= area_width)
                 {
-                    //Console.WriteLine("template: {0}, detect: {1}, {2}", t.Name, tl_x, tl_y);
                     float distance_local = compareTemplate(tl_x, tl_y, t);
 
                     if (distance_local < distance)
@@ -142,10 +203,15 @@ namespace ActivityRecognition
                 tl_x = 0;
                 tl_y += t.Slide_height;
             }
-
-            //Console.WriteLine("template: {0}, top left x: {1}, y: {2}",t.Name, t.TopLeft.X, t.TopLeft.Y);
         }
 
+        /// <summary>
+        /// Calculate the error for one position
+        /// </summary>
+        /// <param name="tl_x"></param>
+        /// <param name="tl_y"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public static float compareTemplate(int tl_x, int tl_y, Template t)
         {
             float distance = 0;
@@ -161,18 +227,24 @@ namespace ActivityRecognition
             return distance;
         }
 
-
+        /// <summary>
+        /// Progress on UI thread 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void OnProgress(object sender, ProgressChangedEventArgs e)
         {
-            // Too big workload on UI
-            Plot.DrawEllipse(pointDiameter, pointDiameter, canvasPoint.X, canvasPoint.Y, brush, canvas_environment);
+
         }
 
-
+        /// <summary>
+        /// Post execute on UI thread
+        /// Update the template location on top view canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void OnPostExecute(object sender, RunWorkerCompletedEventArgs e)
         {
-            //Console.WriteLine("segmentation done");
-
             canvas_environment.Children.Clear();
 
             foreach (Template t in templates)

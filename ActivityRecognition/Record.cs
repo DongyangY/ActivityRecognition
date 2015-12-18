@@ -1,4 +1,11 @@
-﻿using System;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Record positions, postures, joints, RSSIs
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Kinect;
@@ -7,8 +14,15 @@ namespace ActivityRecognition
 {
     class Record
     {
+        /// <summary>
+        /// The file name
+        /// </summary>
         public static string StartTime;
 
+        /// <summary>
+        /// Record activity status
+        /// </summary>
+        /// <param name="activities"></param>
         public static void RecordActivity(LinkedList<Activity> activities)
         {
             string dir = @"" + Properties.Resources.DirectoryActivity;
@@ -18,7 +32,6 @@ namespace ActivityRecognition
                 Directory.CreateDirectory(dir);
             }
 
-            //string fileName = @"Records\Activity\" + StartTime + ".txt";
             string fileName = @"" + dir + StartTime + ".txt";
             string time = DateTime.Now.ToString(@"HH:mm:ss");
 
@@ -31,6 +44,10 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Record positions of each person
+        /// </summary>
+        /// <param name="persons"></param>
         public static void RecordPosition(Person[] persons)
         {
             string dir = @"" + Properties.Resources.DirectoryPosition;
@@ -40,7 +57,6 @@ namespace ActivityRecognition
                 Directory.CreateDirectory(dir);
             }
 
-            //string fileName = @"Records\Position\" + StartTime + ".txt";
             string fileName = @"" + dir + StartTime + ".txt";
             string time = DateTime.Now.ToString(@"HH:mm:ss");
 
@@ -54,6 +70,11 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Record joints of each person
+        /// </summary>
+        /// <param name="bodies"></param>
+        /// <param name="isPositiveJoints"></param>
         public static void RecordJoints(Body[] bodies, bool isPositiveJoints)
         {
             string dir = @"" + Properties.Resources.DirectoryJoint;
@@ -63,7 +84,6 @@ namespace ActivityRecognition
                 Directory.CreateDirectory(dir);
             }
 
-            //string fileName = @"Records\Joints\" + StartTime + ".txt";
             string fileName = @"" + dir + StartTime + ".txt";
             string time = DateTime.Now.ToString(@"HH:mm:ss");
 

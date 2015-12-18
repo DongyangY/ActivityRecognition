@@ -367,7 +367,6 @@ namespace ActivityRecognition
 
                                     TemplateDetector.heightLow = -2.4f;
                                     TemplateDetector.heightHigh = -1.9f;
-                                    TemplateDetector.pointDiameter = 4;
                                     TemplateDetector.canvas_width = Canvas_Position_Background.Width;
                                     TemplateDetector.canvas_height = Canvas_Position_Background.Height;
                                     TemplateDetector.canvas_environment = Canvas_Position_Environment;
