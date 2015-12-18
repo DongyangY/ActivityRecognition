@@ -652,7 +652,7 @@ namespace ActivityRecognition
         }
 
         /// <summary>
-        /// Dispose unreleased references when closing the window
+        /// Dispose unreleased instances when closing the window
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

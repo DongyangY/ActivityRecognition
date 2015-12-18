@@ -1,4 +1,12 @@
-﻿using System;
+﻿//------------------------------------------------------------------------------
+// <summary>
+// Detect person's posture with joints
+// According to pre-trained postures database with visual gesture builder
+// </summary>
+// <author> Dongyang Yao (dongyang.yao@rutgers.edu) </author>
+//------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Kinect;
 using Microsoft.Kinect.VisualGestureBuilder;
@@ -7,14 +15,35 @@ namespace ActivityRecognition
 {
     class PostureDetector
     {
+        /// <summary>
+        /// Posture database directory
+        /// </summary>
         private readonly string GESTURE_DB = @"Gestures\AR.gbd";
 
+        /// <summary>
+        /// Visual gesture builder frame source
+        /// </summary>
         public VisualGestureBuilderFrameSource vgbFrameSource;
+
+        /// <summary>
+        /// Visual gesture builder frame Reader
+        /// </summary>
         private VisualGestureBuilderFrameReader vgbFrameReader;
 
+        /// <summary>
+        /// The index of maintained person array in MainWindow.xaml.cs
+        /// To update the correct person
+        /// </summary>
         private int index;
+
+        /// <summary>
+        /// Foreground canvas of top view
+        /// </summary>
         private System.Windows.Controls.Canvas canvas;
 
+        /// <summary>
+        /// Get or set reader paused status
+        /// </summary>
         public bool IsPaused
         {
             get
@@ -31,6 +60,9 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Get or set person's tracking id
+        /// </summary>
         public ulong TrackingId
         {
             get
@@ -47,6 +79,12 @@ namespace ActivityRecognition
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="kinectSensor"></param>
+        /// <param name="i"></param>
+        /// <param name="c"></param>
         public PostureDetector(KinectSensor kinectSensor, int i, System.Windows.Controls.Canvas c)
         {
             index = i;
@@ -62,7 +100,6 @@ namespace ActivityRecognition
                 vgbFrameReader.FrameArrived += Reader_GestureFrameArrived;
             }
 
-            //Console.WriteLine(System.IO.File.Exists(GESTURE_DB));
             using (VisualGestureBuilderDatabase db = new VisualGestureBuilderDatabase(GESTURE_DB))
             {
                 vgbFrameSource.AddGestures(db.AvailableGestures);
@@ -70,6 +107,11 @@ namespace ActivityRecognition
            
         }
 
+        /// <summary>
+        /// Callback when posture is detected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Reader_GestureFrameArrived(object sender, VisualGestureBuilderFrameArrivedEventArgs e)
         {
             VisualGestureBuilderFrameReference frameReference = e.FrameReference;
@@ -94,7 +136,6 @@ namespace ActivityRecognition
 
                                 if (result != null)
                                 {
-                                    //Console.WriteLine("Gesture: {0}, Detected: {1}, Confidence: {2}", gesture.Name, result.Detected, result.Confidence);
                                     if (result.Detected) {
                                         gestures.Add(gesture.Name, result.Confidence);
                                         MainWindow.persons[index].postures.AddLast(new Posture(gesture.Name));
@@ -104,23 +145,34 @@ namespace ActivityRecognition
                         }
 
                         //Plot.DrawGesturesOnCanvas(MainWindow.persons[index], gestures, canvas);
-
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Callback when person is becoming not tracked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Source_TrackingIdLost(object sender, TrackingIdLostEventArgs e)
         {
             Console.WriteLine("Id: {0}, Lost", e.TrackingId);
         }
 
+        /// <summary>
+        /// Dispose method
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Dispose instances
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
