@@ -13,6 +13,7 @@ Microsoft Visual Studio project
 
 ## Usage
 > What if I have only a Kinect v2 but no RFID reader and tags?
+
 Disable the object use detection in code and do not select objects when defining activities.
 ```C#
 // MainWindow.xaml.cs
