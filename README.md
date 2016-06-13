@@ -9,7 +9,7 @@ A Microsoft [Kinect v2](https://dev.windows.com/en-us/kinect) & [RFID](http://ww
 * Object use detection
 
 ## Installation
-Microsoft Visual Studio project
+Microsoft Visual Studio
 
 ## Usage
 > What if I have only a Kinect v2 but no RFID reader and tags?
